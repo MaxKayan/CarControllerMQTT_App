@@ -33,10 +33,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
                     oldItem.isEnabled() == newItem.isEnabled() &&
                     oldItem.isSelected() == newItem.isSelected();
 
-//            Log.d(TAG, "areContentsTheSame for " + oldItem.getUsername() + "-" + newItem.getUsername() + "? - " + same +
-//                    "/n " + oldItem.isSelected() + " - " + newItem.isSelected());
             return same;
-//            return false;
         }
     };
     private final DeviceViewHolder.OnDeviceCardInteraction editClickCallback;
@@ -91,10 +88,6 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             deviceId.setText(String.valueOf(device.getId()));
 
             switchEnable.setChecked(device.isEnabled());
-//            switchEnable.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                callbacks.setEnabled(isChecked, device);
-//                Log.d(TAG, "bind: setting enabled for "+device.getUsername());
-//            });
             switchEnable.setOnClickListener(v -> {
                 Log.d(TAG, "bind: setting enabled for " + device.getUsername());
                 callbacks.setEnabled(switchEnable.isEnabled(), device);

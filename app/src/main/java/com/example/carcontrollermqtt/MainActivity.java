@@ -11,14 +11,15 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.databinding.ActivityMainBinding;
-import com.example.carcontrollermqtt.service.WqttConnectionManager;
+import com.example.carcontrollermqtt.service.WqttClientManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    public WqttConnectionManager wqttConnectionManager;
     MainViewModel viewModel;
     private ActivityMainBinding binding;
     private AppDatabase database;
+
+    private WqttClientManager wqttClientManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        wqttConnectionManager = WqttConnectionManager.getInstance(this);
-        wqttConnectionManager.connect();
+        wqttClientManager = WqttClientManager.getInstance(this);
+
+        database.deviceDao().observeDevices().observe(this, devices -> wqttClientManager.postDeviceList(devices));
     }
 }

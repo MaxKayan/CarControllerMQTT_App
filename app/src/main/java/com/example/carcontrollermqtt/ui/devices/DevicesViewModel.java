@@ -59,19 +59,6 @@ public class DevicesViewModel extends AndroidViewModel {
                 });
     }
 
-    private void deselectAllDevices() {
-        deviceDao.getDevices()
-                .subscribeOn(Schedulers.io())
-                .subscribe(devices -> {
-                    deviceDao.updateDeviceList(
-                            devices.stream().map(device -> device.cloneWithSelected(false)).collect(Collectors.toList())
-                    )
-                            .subscribe(() -> {
-                                Log.d(TAG, "deselectAllDevices: Succes");
-                            });
-                });
-    }
-
     void selectDevice(Device device) {
         deviceDao.getDevices()
                 .subscribeOn(Schedulers.io())
@@ -84,21 +71,6 @@ public class DevicesViewModel extends AndroidViewModel {
                                 Log.d(TAG, "deselectAllDevices: Succes");
                             });
                 });
-
-//        deviceDao.getSelectedDevice()
-//                .subscribeOn(Schedulers.io())
-//                .subscribe(activeDevice -> {
-//                    deviceDao.updateMultipleDevices(activeDevice.cloneWithSelected(false), updatedDevice)
-//                            .subscribe(() -> {
-//                                Log.d(TAG, "selectDevice: Success!");
-//                            });
-//                }, throwable -> {
-//                    if (throwable instanceof EmptyResultSetException) {
-//                        deviceDao.updateDevice(updatedDevice).subscribe(() -> {
-//                            Log.d(TAG, "selectDevice: Success");
-//                        });
-//                    } else Log.e(TAG, "selectDevice: Failed", throwable);
-//                });
     }
 
     void setEnabledOnDevice(boolean enabled, Device device) {

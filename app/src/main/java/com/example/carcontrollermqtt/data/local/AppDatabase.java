@@ -14,7 +14,7 @@ import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 
 @Database(entities = {Device.class},
-        version = 5,
+        version = 6,
         exportSchema = false)
 //@TypeConverters({DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
