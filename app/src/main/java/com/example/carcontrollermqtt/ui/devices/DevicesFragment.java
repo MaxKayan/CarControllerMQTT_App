@@ -53,7 +53,7 @@ public class DevicesFragment extends Fragment {
 
             @Override
             public void select(int pos, Device device) {
-                if (!device.isActive())
+                if (!device.isSelected())
                     viewModel.selectDevice(device);
             }
         });
@@ -82,7 +82,7 @@ public class DevicesFragment extends Fragment {
     private void subscribeObservers(View view) {
         viewModel.observeDevices().observe(getViewLifecycleOwner(), devices -> {
             for (Device item : devices) {
-                Log.d(TAG, "subscribeObservers: active? = " + item.isActive());
+                Log.d(TAG, "subscribeObservers: active? = " + item.isSelected());
             }
             adapter.submitList(devices);
         });

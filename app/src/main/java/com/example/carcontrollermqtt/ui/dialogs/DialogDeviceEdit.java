@@ -106,9 +106,9 @@ public class DialogDeviceEdit extends DialogFragment {
         int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
         if (editedDevice == null) {
-            result = new Device(0L, false, name, password, keepAliveValue);
+            result = new Device(0L, true, false, name, password, keepAliveValue);
         } else {
-            result = new Device(editedDevice.getId(), editedDevice.isActive(), name, password, keepAliveValue);
+            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), name, password, keepAliveValue);
         }
 
         return result;

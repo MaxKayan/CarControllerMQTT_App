@@ -28,10 +28,10 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         @Override
         public boolean areContentsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
             boolean same = oldItem.getUsername().equals(newItem.getUsername()) &&
-                    oldItem.isActive() == newItem.isActive();
+                    oldItem.isSelected() == newItem.isSelected();
 
             Log.d(TAG, "areContentsTheSame for " + oldItem.getUsername() + "-" + newItem.getUsername() + "? - " + same +
-                    "/n " + oldItem.isActive() + " - " + newItem.isActive());
+                    "/n " + oldItem.isSelected() + " - " + newItem.isSelected());
             return same;
 //            return false;
         }
@@ -83,7 +83,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             Log.d(TAG, "binding " + device.getUsername());
             deviceId.setText(String.valueOf(device.getId()));
 
-            if (device.isActive()) {
+            if (device.isSelected()) {
                 Log.d(TAG, "bind: Active device!");
                 isSelected.setVisibility(View.VISIBLE);
             } else {

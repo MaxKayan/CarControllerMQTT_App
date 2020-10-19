@@ -10,15 +10,17 @@ import java.util.Objects;
 public class Device implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private long id;
-    private boolean active = false;
+    private boolean enabled = true;
+    private boolean selected = false;
     private String username;
     private String password;
     private int keepAlive;
 
-    public Device(long id, boolean active, String username, String password, int keepAlive) {
+    public Device(long id, boolean enabled, boolean selected, String username, String password, int keepAlive) {
         if (id > 0L)
             this.id = id;
-        this.active = active;
+        this.enabled = enabled;
+        this.selected = selected;
         this.username = username;
         this.password = password;
         this.keepAlive = keepAlive;
@@ -31,7 +33,8 @@ public class Device implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Device device = (Device) o;
         return id == device.id &&
-                active == device.active &&
+                enabled == device.enabled &&
+                selected == device.selected &&
                 keepAlive == device.keepAlive &&
                 Objects.equals(username, device.username) &&
                 Objects.equals(password, device.password);
@@ -39,19 +42,19 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, active, username, password, keepAlive);
+        return Objects.hash(id, enabled, selected, username, password, keepAlive);
     }
 
     public long getId() {
         return id;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public boolean isSelected() {
+        return selected;
     }
 
     public String getUsername() {
@@ -66,7 +69,7 @@ public class Device implements Serializable {
         return keepAlive;
     }
 
-    public Device cloneWith(boolean isActive) {
-        return new Device(this.id, isActive, this.username, this.password, this.keepAlive);
+    public Device cloneWith(boolean isSelected) {
+        return new Device(this.id, this.enabled, isSelected, this.username, this.password, this.keepAlive);
     }
 }

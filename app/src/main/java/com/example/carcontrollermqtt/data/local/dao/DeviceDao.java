@@ -20,7 +20,7 @@ public interface DeviceDao {
     @Query("SELECT * FROM devices")
     LiveData<List<Device>> observeDevices();
 
-    @Query("SELECT * FROM devices WHERE active = 1")
+    @Query("SELECT * FROM devices WHERE selected = 1")
     Single<Device> getSelectedDevice();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
