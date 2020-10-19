@@ -11,13 +11,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.databinding.ActivityMainBinding;
+import com.example.carcontrollermqtt.service.WqttClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
-
+    public WqttClient wqttClient;
     MainViewModel viewModel;
-
+    private ActivityMainBinding binding;
     private AppDatabase database;
 
     @Override
@@ -38,5 +38,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        wqttClient = WqttClient.getInstance(this);
+        wqttClient.connect();
     }
 }
