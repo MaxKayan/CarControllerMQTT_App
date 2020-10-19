@@ -34,7 +34,7 @@ public class WqttClient {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.i(TAG, "messageArrived: " + device.getUsername() + " - " + topic + " - " + message.toString());
+                Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
             }
 
             @Override
@@ -45,7 +45,7 @@ public class WqttClient {
     }
 
     private void subscribeToTopics() throws MqttException {
-        client.subscribe("#", 1);
+        client.subscribe("#", 0);
     }
 
     public void connect() {

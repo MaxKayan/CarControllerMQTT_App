@@ -62,12 +62,6 @@ public class WqttClientManager {
         cleanDeletedDevices(knownDeviceKeys);
     }
 
-//    private void subscribeToData() {
-//        deviceDao.observeDevices().observe(activity, devices -> {
-//
-//        });
-//    }
-
     @SuppressWarnings("ConstantConditions")
     private void cleanDeletedDevices(Set<String> knownKeys) {
         for (String key : deviceClients.keySet()) {

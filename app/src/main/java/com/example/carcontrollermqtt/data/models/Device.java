@@ -1,5 +1,6 @@
 package com.example.carcontrollermqtt.data.models;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -43,6 +44,12 @@ public class Device implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, enabled, selected, username, password, keepAlive);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return username + "-" + super.toString();
     }
 
     public long getId() {
