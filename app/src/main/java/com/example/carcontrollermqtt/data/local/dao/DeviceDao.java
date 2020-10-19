@@ -30,7 +30,7 @@ public interface DeviceDao {
     Completable updateDevice(Device device);
 
     @Update
-    Completable updateDevices(Device[] devices);
+    Completable updateMultipleDevices(Device... devices);
 
     @Delete
     Completable deleteDevice(Device device);

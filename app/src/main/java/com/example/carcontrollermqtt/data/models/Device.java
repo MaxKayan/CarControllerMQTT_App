@@ -3,10 +3,11 @@ package com.example.carcontrollermqtt.data.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(tableName = "devices")
-public class Device {
+public class Device implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private long id;
     private boolean active = false;
@@ -22,6 +23,7 @@ public class Device {
         this.password = password;
         this.keepAlive = keepAlive;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -62,5 +64,9 @@ public class Device {
 
     public int getKeepAlive() {
         return keepAlive;
+    }
+
+    public Device cloneWith(boolean isActive) {
+        return new Device(this.id, isActive, this.username, this.password, this.keepAlive);
     }
 }

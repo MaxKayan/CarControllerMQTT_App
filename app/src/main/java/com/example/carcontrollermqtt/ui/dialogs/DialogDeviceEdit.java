@@ -15,21 +15,20 @@ import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.DialogDeviceEditBinding;
+import com.google.android.material.textfield.TextInputLayout;
 
 import io.reactivex.schedulers.Schedulers;
 
 public class DialogDeviceEdit extends DialogFragment {
     private static final String TAG = "DialogDeviceEdit";
-    private static final String ID = "DeviceID";
-    private static final String NAME = "NameField";
-    private static final String PASSWORD = "PasswordField";
-    private static final String KEEP_ALIVE = "KeepAliveField";
+    private static final String DEVICE_SERIALIZED = "DeviceSerialized";
+
 
     DialogDeviceEditBinding binding;
 
     DeviceDao deviceDao;
 
-    private long id;
+    private Device editedDevice;
 
     public static DialogDeviceEdit newInstance() {
         return new DialogDeviceEdit();
@@ -38,10 +37,7 @@ public class DialogDeviceEdit extends DialogFragment {
     public static DialogDeviceEdit newInstance(Device device) {
         DialogDeviceEdit instance = new DialogDeviceEdit();
         Bundle args = new Bundle();
-        args.putLong(ID, device.getId());
-        args.putString(NAME, device.getUsername());
-        args.putString(PASSWORD, device.getPassword());
-        args.putInt(KEEP_ALIVE, device.getKeepAlive());
+        args.putSerializable(DEVICE_SERIALIZED, device);
         instance.setArguments(args);
         return instance;
     }
@@ -64,35 +60,68 @@ public class DialogDeviceEdit extends DialogFragment {
 
     private void unpackBundleArgs(Bundle args) {
         if (args != null) {
-            id = args.getLong(ID);
-            binding.inputName.setText(args.getString(NAME));
-            binding.inputPassword.setText(args.getString(PASSWORD));
-            binding.inputKeepAlive.setText(String.valueOf(args.getInt(KEEP_ALIVE)));
+            editedDevice = (Device) args.getSerializable(DEVICE_SERIALIZED);
+            if (editedDevice == null) return;
+
+            binding.textHeader.setText("Редактировать устройство");
+            binding.inputName.setText(editedDevice.getUsername());
+            binding.inputPassword.setText(editedDevice.getPassword());
+            binding.inputKeepAlive.setText(String.valueOf(editedDevice.getKeepAlive()));
         }
     }
 
     private void setupListeners() {
         binding.btnConfirm.setOnClickListener(v -> {
+            if (!validateInput()) return;
+
             writeToDB();
             dismiss();
         });
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @SuppressLint("CheckResult")
-    private void writeToDB() {
+    private boolean layoutTextNotEmpty(TextInputLayout layout, String errorText) {
+        if (layout.getEditText().getText().toString().isEmpty()) {
+            layout.setError(errorText);
+            Log.d(TAG, "layoutTextNotEmpty: setting false");
+            return false;
+        } else {
+            layout.setError(null);
+            Log.d(TAG, "layoutTextNotEmpty: setting true");
+            return true;
+        }
+    }
+
+    private boolean validateInput() {
+        boolean nameValid = layoutTextNotEmpty(binding.inputNameLayout, "Укажите имя устройства");
+        boolean passValid = layoutTextNotEmpty(binding.inputPasswordLayout, "Укажите пароль");
+
+        return nameValid && passValid;
+    }
+
+    private Device getResult() {
+        Device result;
         String name = binding.inputName.getText().toString();
         String password = binding.inputPassword.getText().toString();
         String keepAlive = binding.inputKeepAlive.getText().toString();
-        Log.d(TAG, "writeToDB: " + name);
-        Log.d(TAG, "writeToDB: " + password);
-        Log.d(TAG, "writeToDB: " + keepAlive);
+        int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
-        deviceDao.insertDevice(new Device(id, false, name, password, keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive)))
+        if (editedDevice == null) {
+            result = new Device(0L, false, name, password, keepAliveValue);
+        } else {
+            result = new Device(editedDevice.getId(), editedDevice.isActive(), name, password, keepAliveValue);
+        }
+
+        return result;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
+    private void writeToDB() {
+        deviceDao.insertDevice(getResult())
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     Log.d(TAG, "setupListeners: Inserted new device");
-//                    Toast.makeText(getContext(), "Устройство "+name+" добавлено", Toast.LENGTH_SHORT).show();
                 });
     }
+
 }

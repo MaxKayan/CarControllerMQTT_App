@@ -60,14 +60,11 @@ public class DevicesViewModel extends AndroidViewModel {
     }
 
     void selectDevice(Device device) {
-        Device updatedDevice = new Device(device.getId(), device.isActive(), device.getUsername(),
-                device.getPassword(), device.getKeepAlive());
-        updatedDevice.setActive(true);
+        Device updatedDevice = device.cloneWith(true);
         deviceDao.getSelectedDevice()
                 .subscribeOn(Schedulers.io())
                 .subscribe(activeDevice -> {
-                    activeDevice.setActive(false);
-                    deviceDao.updateDevices(new Device[]{activeDevice, updatedDevice})
+                    deviceDao.updateMultipleDevices(activeDevice.cloneWith(false), updatedDevice)
                             .subscribe(() -> {
                                 Log.d(TAG, "selectDevice: Success!");
                             });

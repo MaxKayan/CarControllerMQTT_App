@@ -32,6 +32,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputName"
+            android:digits="@string/device_name_digits"
+            android:inputType="textFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -88,7 +90,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginVertical="4dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="2dp"
             android:text="Записать"
             android:padding="6dp"/>
 
