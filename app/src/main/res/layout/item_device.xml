@@ -81,42 +81,43 @@
 
             <LinearLayout
                 android:id="@+id/isSelected"
-                android:visibility="gone"
-                android:background="@color/colorBgEnd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:background="@color/colorBgEnd"
                 android:gravity="center|start"
-                >
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
-                    android:src="@drawable/ic_baseline_keyboard_arrow_right_24"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    app:tint="@android:color/holo_green_light"
-                    android:layout_alignParentStart="true"/>
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    app:tint="@android:color/holo_green_light" />
 
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Body2"
                     android:layout_width="wrap_content"
-                    android:textColor="@android:color/white"
                     android:layout_height="wrap_content"
-                    android:text="Выбрано"/>
+                    android:text="Выбрано"
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
 
-            <include layout="@layout/hr"/>
+            <include layout="@layout/hr" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchEnable"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="8dp"
+                    android:checked="true"
+                    app:switchMinWidth="60dp" />
 
                 <TextView
                     android:id="@+id/textStatus"
@@ -125,12 +126,13 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/switchEnable"
-                    android:text="Отключен" />
+                    android:text="@string/device_disabled" />
 
                 <ImageView
                     android:id="@+id/iconDisconnected"
                     style="@style/IconDeviceStatus"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="4dp"
                     android:contentDescription="Device disconnected"
                     android:src="@drawable/ic_baseline_link_off_24"
@@ -140,6 +142,7 @@
                     android:id="@+id/iconConnected"
                     style="@style/IconDeviceStatus"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="4dp"
                     android:contentDescription="Device connected"
                     android:src="@drawable/ic_baseline_link_24"

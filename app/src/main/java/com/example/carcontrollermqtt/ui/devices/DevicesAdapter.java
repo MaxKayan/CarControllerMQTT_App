@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.ItemDeviceBinding;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceViewHolder> {
     private static final String TAG = "DevicesAdapter";
@@ -28,10 +30,11 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         @Override
         public boolean areContentsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
             boolean same = oldItem.getUsername().equals(newItem.getUsername()) &&
+                    oldItem.isEnabled() == newItem.isEnabled() &&
                     oldItem.isSelected() == newItem.isSelected();
 
-            Log.d(TAG, "areContentsTheSame for " + oldItem.getUsername() + "-" + newItem.getUsername() + "? - " + same +
-                    "/n " + oldItem.isSelected() + " - " + newItem.isSelected());
+//            Log.d(TAG, "areContentsTheSame for " + oldItem.getUsername() + "-" + newItem.getUsername() + "? - " + same +
+//                    "/n " + oldItem.isSelected() + " - " + newItem.isSelected());
             return same;
 //            return false;
         }
@@ -65,11 +68,14 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         private ImageView iconConnected, iconDisconnected;
         private MaterialButton buttonEdit;
         private View isSelected;
-        private MaterialCardView container;
+        private MaterialCardView cardDevice;
+        private SwitchMaterial switchEnable;
+
+//        private ItemDeviceBinding binding;
 
         DeviceViewHolder(ItemDeviceBinding binding) {
             super(binding.getRoot());
-            container = binding.cardDevice;
+            cardDevice = binding.cardDevice;
             deviceId = binding.deviceId;
             isSelected = binding.isSelected;
             deviceName = binding.deviceName;
@@ -77,14 +83,25 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             iconConnected = binding.iconConnected;
             iconDisconnected = binding.iconDisconnected;
             buttonEdit = binding.buttonEdit;
+            switchEnable = binding.switchEnable;
         }
 
-        void bind(int pos, Device device, OnDeviceCardInteraction callback) {
+        void bind(int pos, Device device, OnDeviceCardInteraction callbacks) {
             Log.d(TAG, "binding " + device.getUsername());
             deviceId.setText(String.valueOf(device.getId()));
 
+            switchEnable.setChecked(device.isEnabled());
+//            switchEnable.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                callbacks.setEnabled(isChecked, device);
+//                Log.d(TAG, "bind: setting enabled for "+device.getUsername());
+//            });
+            switchEnable.setOnClickListener(v -> {
+                Log.d(TAG, "bind: setting enabled for " + device.getUsername());
+                callbacks.setEnabled(switchEnable.isEnabled(), device);
+            });
+            textStatus.setText(device.isEnabled() ? R.string.device_enabled : R.string.device_disabled);
+
             if (device.isSelected()) {
-                Log.d(TAG, "bind: Active device!");
                 isSelected.setVisibility(View.VISIBLE);
             } else {
                 isSelected.setVisibility(View.GONE);
@@ -92,17 +109,19 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
 
             deviceName.setText(device.getUsername());
             buttonEdit.setOnClickListener(v -> {
-                callback.edit(device);
+                callbacks.edit(device);
             });
-            container.setOnClickListener(v -> {
-                callback.select(pos, device);
+            cardDevice.setOnClickListener(v -> {
+                callbacks.select(device);
             });
         }
 
         public interface OnDeviceCardInteraction {
             void edit(Device device);
 
-            void select(int pos, Device device);
+            void select(Device device);
+
+            void setEnabled(boolean enabled, Device device);
         }
 
     }

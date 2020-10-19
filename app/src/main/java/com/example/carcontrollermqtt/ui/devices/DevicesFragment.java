@@ -52,11 +52,17 @@ public class DevicesFragment extends Fragment {
             }
 
             @Override
-            public void select(int pos, Device device) {
+            public void select(Device device) {
                 if (!device.isSelected())
                     viewModel.selectDevice(device);
             }
+
+            @Override
+            public void setEnabled(boolean enabled, Device device) {
+                viewModel.setEnabledOnDevice(enabled, device);
+            }
         });
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setAdapter(adapter);
@@ -81,9 +87,6 @@ public class DevicesFragment extends Fragment {
 
     private void subscribeObservers(View view) {
         viewModel.observeDevices().observe(getViewLifecycleOwner(), devices -> {
-            for (Device item : devices) {
-                Log.d(TAG, "subscribeObservers: active? = " + item.isSelected());
-            }
             adapter.submitList(devices);
         });
 

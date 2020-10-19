@@ -20,6 +20,7 @@
         app:icon="@drawable/ic_round_add_24"
         app:iconTint="@android:color/white"
         android:text="Добавить"
+
         app:iconPadding="6dp"
         android:textColor="@android:color/white"
         android:layout_gravity="bottom|end"

@@ -8,13 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.room.EmptyResultSetException;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.reactivex.schedulers.Schedulers;
 
@@ -59,21 +59,54 @@ public class DevicesViewModel extends AndroidViewModel {
                 });
     }
 
-    void selectDevice(Device device) {
-        Device updatedDevice = device.cloneWith(true);
-        deviceDao.getSelectedDevice()
+    private void deselectAllDevices() {
+        deviceDao.getDevices()
                 .subscribeOn(Schedulers.io())
-                .subscribe(activeDevice -> {
-                    deviceDao.updateMultipleDevices(activeDevice.cloneWith(false), updatedDevice)
+                .subscribe(devices -> {
+                    deviceDao.updateDeviceList(
+                            devices.stream().map(device -> device.cloneWithSelected(false)).collect(Collectors.toList())
+                    )
                             .subscribe(() -> {
-                                Log.d(TAG, "selectDevice: Success!");
+                                Log.d(TAG, "deselectAllDevices: Succes");
                             });
-                }, throwable -> {
-                    if (throwable instanceof EmptyResultSetException) {
-                        deviceDao.updateDevice(updatedDevice).subscribe(() -> {
-                            Log.d(TAG, "selectDevice: Success");
-                        });
-                    } else Log.e(TAG, "selectDevice: Failed", throwable);
+                });
+    }
+
+    void selectDevice(Device device) {
+        deviceDao.getDevices()
+                .subscribeOn(Schedulers.io())
+                .subscribe(devices -> {
+                    deviceDao.updateDeviceList(devices.stream()
+                            .map(item -> item.getId() == device.getId() ? item.cloneWithSelected(true) : item.cloneWithSelected(false))
+                            .collect(Collectors.toList())
+                    )
+                            .subscribe(() -> {
+                                Log.d(TAG, "deselectAllDevices: Succes");
+                            });
+                });
+
+//        deviceDao.getSelectedDevice()
+//                .subscribeOn(Schedulers.io())
+//                .subscribe(activeDevice -> {
+//                    deviceDao.updateMultipleDevices(activeDevice.cloneWithSelected(false), updatedDevice)
+//                            .subscribe(() -> {
+//                                Log.d(TAG, "selectDevice: Success!");
+//                            });
+//                }, throwable -> {
+//                    if (throwable instanceof EmptyResultSetException) {
+//                        deviceDao.updateDevice(updatedDevice).subscribe(() -> {
+//                            Log.d(TAG, "selectDevice: Success");
+//                        });
+//                    } else Log.e(TAG, "selectDevice: Failed", throwable);
+//                });
+    }
+
+    void setEnabledOnDevice(boolean enabled, Device device) {
+        deviceDao.updateDevice(device.cloneWithEnabled(enabled))
+                .subscribeOn(Schedulers.io())
+                .subscribe(() -> {
+                    Log.d(TAG, "setEnabledOnDevice: Success");
+//                    message.postValue("Связь с устройством " + device.getUsername() + (enabled ? " включена" : " отключена"));
                 });
     }
 }

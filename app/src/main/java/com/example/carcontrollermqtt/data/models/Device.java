@@ -69,7 +69,12 @@ public class Device implements Serializable {
         return keepAlive;
     }
 
-    public Device cloneWith(boolean isSelected) {
+    public Device cloneWithEnabled(boolean isEnabled) {
+        return new Device(this.id, isEnabled, this.selected, this.username, this.password, this.keepAlive);
+    }
+
+    public Device cloneWithSelected(boolean isSelected) {
         return new Device(this.id, this.enabled, isSelected, this.username, this.password, this.keepAlive);
     }
+
 }

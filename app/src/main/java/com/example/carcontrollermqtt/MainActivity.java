@@ -11,11 +11,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.databinding.ActivityMainBinding;
-import com.example.carcontrollermqtt.service.WqttClient;
+import com.example.carcontrollermqtt.service.WqttConnectionManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    public WqttClient wqttClient;
+    public WqttConnectionManager wqttConnectionManager;
     MainViewModel viewModel;
     private ActivityMainBinding binding;
     private AppDatabase database;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        wqttClient = WqttClient.getInstance(this);
-        wqttClient.connect();
+        wqttConnectionManager = WqttConnectionManager.getInstance(this);
+        wqttConnectionManager.connect();
     }
 }

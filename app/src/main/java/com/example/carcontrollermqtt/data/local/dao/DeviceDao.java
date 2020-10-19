@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.example.carcontrollermqtt.data.models.Device;
@@ -20,6 +21,10 @@ public interface DeviceDao {
     @Query("SELECT * FROM devices")
     LiveData<List<Device>> observeDevices();
 
+    @Query("SELECT * FROM devices")
+    Single<List<Device>> getDevices();
+
+    @Transaction
     @Query("SELECT * FROM devices WHERE selected = 1")
     Single<Device> getSelectedDevice();
 
@@ -28,6 +33,9 @@ public interface DeviceDao {
 
     @Update
     Completable updateDevice(Device device);
+
+    @Update
+    Completable updateDeviceList(List<Device> list);
 
     @Update
     Completable updateMultipleDevices(Device... devices);

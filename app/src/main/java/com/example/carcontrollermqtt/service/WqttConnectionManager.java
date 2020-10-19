@@ -12,16 +12,14 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.Arrays;
-
-public class WqttClient {
+public class WqttConnectionManager {
     public static final String SERVER_URI = "wss://wqtt.ru:6618/";
     private static final String TAG = "WqttClient";
-    private static WqttClient instance;
+    private static WqttConnectionManager instance;
 
     private MqttAndroidClient mqqtAndroidClient;
 
-    private WqttClient(Context context) {
+    private WqttConnectionManager(Context context) {
         mqqtAndroidClient = new MqttAndroidClient(context, SERVER_URI, "wsc_77");
         mqqtAndroidClient.setCallback(new MqttCallback() {
             @Override
@@ -41,11 +39,11 @@ public class WqttClient {
         });
     }
 
-    public static WqttClient getInstance(Context context) {
+    public static WqttConnectionManager getInstance(Context context) {
         if (instance != null)
             return instance;
 
-        return new WqttClient(context);
+        return new WqttConnectionManager(context);
     }
 
     public void connect() {
