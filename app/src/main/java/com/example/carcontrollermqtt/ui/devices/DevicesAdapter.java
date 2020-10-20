@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
+import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.databinding.ItemDeviceBinding;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.Objects;
 
 public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceViewHolder> {
     public static final DiffUtil.ItemCallback<Device> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<Device>() {
@@ -30,9 +33,10 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         public boolean areContentsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
             boolean same = oldItem.getUsername().equals(newItem.getUsername()) &&
                     oldItem.isEnabled() == newItem.isEnabled() &&
-                    oldItem.isSelected() == newItem.isSelected();
+                    oldItem.isSelected() == newItem.isSelected() &&
+                    Objects.equals(oldItem.getEvent(), newItem.getEvent());
 
-            return same;
+            return false;
         }
     };
     private static final String TAG = "DevicesAdapter";
@@ -62,7 +66,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
 
     static class DeviceViewHolder extends RecyclerView.ViewHolder {
         private TextView deviceId, deviceName, textStatus;
-        private ImageView iconConnected, iconDisconnected;
+        private ImageView iconConnected, iconDisconnected, iconError;
         private MaterialButton buttonEdit;
         private View isSelected;
         private MaterialCardView cardDevice;
@@ -79,6 +83,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             textStatus = binding.textStatus;
             iconConnected = binding.iconConnected;
             iconDisconnected = binding.iconDisconnected;
+            iconError = binding.iconError;
             buttonEdit = binding.buttonEdit;
             switchEnable = binding.switchEnable;
         }
@@ -88,7 +93,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         }
 
         void bind(Device device, OnDeviceCardInteraction callbacks) {
-            Log.d(TAG, "binding " + device.getUsername() + " upState - " + device.isUp());
+            Log.i(TAG, "binding " + device.getUsername() + " event - " + device.getEvent());
             deviceId.setText(String.valueOf(device.getId()));
 
             switchEnable.setOnCheckedChangeListener(null);
@@ -118,8 +123,24 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
                 callbacks.select(device);
             });
 
-            iconConnected.setVisibility(boolToVisibility(device.isUp()));
-            iconDisconnected.setVisibility(boolToVisibility(!device.isUp()));
+            DeviceEvent event = device.getEvent();
+            if (event != null) {
+                switch (event.getStatus()) {
+                    case CONNECTED:
+                        iconConnected.setVisibility(View.VISIBLE);
+                        iconDisconnected.setVisibility(View.GONE);
+                        break;
+                    case DISCONNECTED:
+                        iconDisconnected.setVisibility(View.VISIBLE);
+                        iconConnected.setVisibility(View.GONE);
+                        break;
+                    case ERROR:
+                        iconError.setVisibility(View.VISIBLE);
+                        iconDisconnected.setVisibility(View.GONE);
+//                        Toast.makeText(cardDevice.getContext(), event.getMessage(), Toast.LENGTH_LONG).show();
+                        break;
+                }
+            }
         }
 
         public interface OnDeviceCardInteraction {

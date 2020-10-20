@@ -131,27 +131,31 @@
                 <ImageView
                     android:id="@+id/iconDisconnected"
                     style="@style/IconDeviceStatus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
                     android:contentDescription="Device disconnected"
                     android:src="@drawable/ic_baseline_link_off_24"
-                    app:tint="@android:color/holo_red_light" />
+                    app:tint="@android:color/darker_gray" />
 
                 <ImageView
                     android:id="@+id/iconConnected"
                     style="@style/IconDeviceStatus"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
                     android:contentDescription="Device connected"
                     android:src="@drawable/ic_baseline_link_24"
                     android:visibility="invisible"
                     app:tint="@android:color/holo_green_light" />
+
+                <ImageView
+                    android:id="@+id/iconError"
+                    style="@style/IconDeviceStatus"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="Device connected"
+                    android:src="@drawable/ic_outline_error_outline_24"
+                    android:visibility="invisible"
+                    app:tint="@android:color/holo_red_light" />
 
             </RelativeLayout>
 

@@ -3,27 +3,25 @@ package com.example.carcontrollermqtt.data.models;
 import android.util.Log;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class WqttClient {
     private static final String TAG = "WqttClient";
     private Device device;
     private MqttConnectOptions options;
     private MqttAndroidClient client;
-    private IMqttActionListener mqttActionListener;
+    private WqttClientAction callbacks;
 
-    public WqttClient(Device device, MqttConnectOptions options, MqttAndroidClient client, MqttCallback callbacks, IMqttActionListener actionListener) {
+    public interface WqttClientAction {
+        void connect(Device device, MqttAndroidClient client, MqttConnectOptions options);
+    }
+
+    public WqttClient(Device device, MqttConnectOptions options, MqttAndroidClient client, WqttClientAction callbacks) {
         this.device = device;
         this.options = options;
         this.client = client;
-        this.client.setCallback(callbacks);
-        this.mqttActionListener = actionListener;
+        this.callbacks = callbacks;
     }
 
     private void subscribeToTopics() throws MqttException {
@@ -31,12 +29,13 @@ public class WqttClient {
     }
 
     public void connect() {
-        Log.i(TAG, "connect: " + device.getUsername());
-        try {
-            client.connect(options, null, mqttActionListener);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+        callbacks.connect(device, client, options);
+//        Log.i(TAG, "connect: " + device.getUsername());
+//        try {
+//            client.connect(options, null, mqttActionListener);
+//        } catch (MqttException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void disconnect() {

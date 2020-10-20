@@ -1,6 +1,7 @@
 package com.example.carcontrollermqtt.data.models;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
@@ -12,14 +13,15 @@ import java.util.Objects;
 public class Device implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private long id;
-    private boolean enabled = true;
-    private boolean selected = false;
+    private boolean enabled;
+    private boolean selected;
     private String username;
     private String password;
     private int keepAlive;
 
+    @Nullable
     @Ignore
-    private boolean isUp = false;
+    private DeviceEvent event;
 
     public Device(long id, boolean enabled, boolean selected, String username, String password, int keepAlive) {
         if (id > 0L)
@@ -42,12 +44,13 @@ public class Device implements Serializable {
                 selected == device.selected &&
                 keepAlive == device.keepAlive &&
                 Objects.equals(username, device.username) &&
-                Objects.equals(password, device.password);
+                Objects.equals(password, device.password) &&
+                Objects.equals(event, device.event);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, enabled, selected, username, password, keepAlive);
+        return Objects.hash(id, enabled, selected, username, password, keepAlive, event);
     }
 
     @NonNull
@@ -80,12 +83,13 @@ public class Device implements Serializable {
         return keepAlive;
     }
 
-    public boolean isUp() {
-        return isUp;
+    @Nullable
+    public DeviceEvent getEvent() {
+        return event;
     }
 
-    public void setUp(boolean up) {
-        isUp = up;
+    public void setEvent(@Nullable DeviceEvent event) {
+        this.event = event;
     }
 
     public Device cloneWithEnabled(boolean isEnabled) {

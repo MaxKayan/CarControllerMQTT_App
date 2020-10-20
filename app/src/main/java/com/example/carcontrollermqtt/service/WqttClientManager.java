@@ -2,6 +2,7 @@ package com.example.carcontrollermqtt.service;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.carcontrollermqtt.data.models.Device;
+import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.data.models.WqttClient;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -31,17 +33,19 @@ public class WqttClientManager {
     private static WqttClientManager instance;
 
     // TODO: A way to avoid passing context to this singleton?
-    private Context context;
+    private final Context context;
 //    private AppDatabase database;
 //    private DeviceDao deviceDao;
 
-    private WqttClientDiffUtil deviceListManager;
+    private final WqttClientDiffUtil deviceListManager;
+    private final WqttClientEventBus eventBus;
 
     // Device username is the key
-    private MutableLiveData<Map<String, WqttClient>> wqttClientsLD = new MutableLiveData<>(new HashMap<>());
+    private final MutableLiveData<Map<String, WqttClient>> wqttClientsLD = new MutableLiveData<>(new HashMap<>());
 
     private WqttClientManager(Context appContext) {
         context = appContext.getApplicationContext();
+        eventBus = WqttClientEventBus.getInstance();
         deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
@@ -124,28 +128,37 @@ public class WqttClientManager {
         options.setUserName(device.getUsername());
         options.setPassword(device.getPassword().toCharArray());
 
-        WqttClient wqtt = new WqttClient(device, options, client, new MqttCallback() {
+        MutableLiveData<DeviceEvent> eventChannel = eventBus.getChannel(device.getUsername());
+
+        client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
                 Log.w(TAG, "connectionLost: " + device.getUsername(), cause);
+                eventChannel.postValue(DeviceEvent.disconnected(device, cause == null ? null : cause.getMessage()));
+
             }
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
+                Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {
                 Log.i(TAG, "deliveryComplete: " + device.getUsername());
             }
-        },
-                new IMqttActionListener() {
+        });
+
+        WqttClient wqtt = new WqttClient(device, options, client, (connDevice, connClient, connOptions) -> {
+            try {
+                connClient.connect(options, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.i(TAG, "onSuccess: " + device.getUsername());
+                        Log.i(TAG, "onSuccess: connected " + device.getUsername());
                         try {
                             client.subscribe("#", 0);
+                            eventChannel.postValue(DeviceEvent.connected(device, null));
                         } catch (MqttException e) {
                             e.printStackTrace();
                         }
@@ -153,9 +166,14 @@ public class WqttClientManager {
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.w(TAG, "onFailure: " + device.getUsername(), exception);
+                        Log.w(TAG, "onFailure: failed mqtt " + device.getUsername(), exception);
+                        eventChannel.postValue(DeviceEvent.error(device, exception.getLocalizedMessage()));
                     }
                 });
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        });
         handleClientConnection(wqtt);
         return wqtt;
     }
