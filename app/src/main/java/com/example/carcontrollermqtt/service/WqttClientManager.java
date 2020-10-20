@@ -1,16 +1,24 @@
 package com.example.carcontrollermqtt.service;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.WqttClient;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +42,6 @@ public class WqttClientManager {
 
     private WqttClientManager(Context appContext) {
         context = appContext.getApplicationContext();
-//        database = AppDatabase.getInstance(context);
-//        deviceDao = database.deviceDao();
         deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
@@ -72,6 +78,10 @@ public class WqttClientManager {
         return instance;
     }
 
+    public LiveData<Map<String, WqttClient>> observeWqttClients() {
+        return wqttClientsLD;
+    }
+
     @Nullable
     public WqttClient getWqttClient(@NonNull Device device) {
         Map<String, WqttClient> deviceMap = wqttClientsLD.getValue();
@@ -91,34 +101,6 @@ public class WqttClientManager {
 
     public void postDeviceList(List<Device> devices) {
         deviceListManager.submitList(devices);
-//        Log.d(TAG, "postDeviceList: new list posted - " + devices);
-//        Set<String> knownDeviceKeys = new HashSet<>();
-//
-//        for (Device device : devices) {
-//            String key = device.getUsername();
-//            knownDeviceKeys.add(key);
-//            Log.d(TAG, "postDeviceList: processing - " + key);
-//
-//            if (!deviceClients.containsKey(key)) {
-//                Log.d(TAG, "postDeviceList: key is new, creating new client");
-//                deviceClients.put(key, createClientForDevice(device));
-//            } else {
-//                Log.d(TAG, "postDeviceList: key's already in the map");
-//                WqttClient client = deviceClients.get(key);
-//                if (client != null) {
-//                    client.disconnect();
-//
-//                    deviceClients.remove(key);
-//                    deviceClients.put(key, createClientForDevice(device));
-//                }
-//            }
-//        }
-//
-//        cleanDeletedDevices(knownDeviceKeys);
-//        Log.d(TAG, "postDeviceList: map after cleanup - " + deviceClients.keySet().toString());
-//        deviceClients.forEach((s, wqttClient) -> {
-//            Log.d(TAG, "postDeviceList: " + s + "/n " + wqttClient);
-//        });
     }
 
     private void handleClientConnection(WqttClient wqtt) {
@@ -142,7 +124,38 @@ public class WqttClientManager {
         options.setUserName(device.getUsername());
         options.setPassword(device.getPassword().toCharArray());
 
-        WqttClient wqtt = new WqttClient(device, options, client);
+        WqttClient wqtt = new WqttClient(device, options, client, new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable cause) {
+                Log.w(TAG, "connectionLost: " + device.getUsername(), cause);
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+                Log.i(TAG, "deliveryComplete: " + device.getUsername());
+            }
+        },
+                new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.i(TAG, "onSuccess: " + device.getUsername());
+                        try {
+                            client.subscribe("#", 0);
+                        } catch (MqttException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.w(TAG, "onFailure: " + device.getUsername(), exception);
+                    }
+                });
         handleClientConnection(wqtt);
         return wqtt;
     }

@@ -20,7 +20,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceViewHolder> {
-    private static final String TAG = "DevicesAdapter";
     public static final DiffUtil.ItemCallback<Device> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<Device>() {
         @Override
         public boolean areItemsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
@@ -36,6 +35,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             return same;
         }
     };
+    private static final String TAG = "DevicesAdapter";
     private final DeviceViewHolder.OnDeviceCardInteraction editClickCallback;
 
     public DevicesAdapter(DeviceViewHolder.OnDeviceCardInteraction editClickCallback) {
@@ -83,8 +83,12 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             switchEnable = binding.switchEnable;
         }
 
+        private int boolToVisibility(boolean isVisible) {
+            return isVisible ? View.VISIBLE : View.GONE;
+        }
+
         void bind(Device device, OnDeviceCardInteraction callbacks) {
-            Log.d(TAG, "binding " + device.getUsername());
+            Log.d(TAG, "binding " + device.getUsername() + " upState - " + device.isUp());
             deviceId.setText(String.valueOf(device.getId()));
 
             switchEnable.setOnCheckedChangeListener(null);
@@ -113,6 +117,9 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             cardDevice.setOnClickListener(v -> {
                 callbacks.select(device);
             });
+
+            iconConnected.setVisibility(boolToVisibility(device.isUp()));
+            iconDisconnected.setVisibility(boolToVisibility(!device.isUp()));
         }
 
         public interface OnDeviceCardInteraction {

@@ -16,32 +16,14 @@ public class WqttClient {
     private Device device;
     private MqttConnectOptions options;
     private MqttAndroidClient client;
+    private IMqttActionListener mqttActionListener;
 
-    public WqttClient(Device device, MqttConnectOptions options, MqttAndroidClient client) {
+    public WqttClient(Device device, MqttConnectOptions options, MqttAndroidClient client, MqttCallback callbacks, IMqttActionListener actionListener) {
         this.device = device;
         this.options = options;
         this.client = client;
-
-        setClientCallbacks();
-    }
-
-    private void setClientCallbacks() {
-        this.client.setCallback(new MqttCallback() {
-            @Override
-            public void connectionLost(Throwable cause) {
-                Log.w(TAG, "connectionLost: " + device.getUsername(), cause);
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {
-                Log.i(TAG, "deliveryComplete: " + device.getUsername());
-            }
-        });
+        this.client.setCallback(callbacks);
+        this.mqttActionListener = actionListener;
     }
 
     private void subscribeToTopics() throws MqttException {
@@ -51,22 +33,7 @@ public class WqttClient {
     public void connect() {
         Log.i(TAG, "connect: " + device.getUsername());
         try {
-            client.connect(options, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.i(TAG, "onSuccess: " + device.getUsername());
-                    try {
-                        subscribeToTopics();
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.w(TAG, "onFailure: " + device.getUsername(), exception);
-                }
-            });
+            client.connect(options, null, mqttActionListener);
         } catch (MqttException e) {
             e.printStackTrace();
         }

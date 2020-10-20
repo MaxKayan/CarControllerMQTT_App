@@ -2,6 +2,7 @@ package com.example.carcontrollermqtt.data.models;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -16,6 +17,9 @@ public class Device implements Serializable {
     private String username;
     private String password;
     private int keepAlive;
+
+    @Ignore
+    private boolean isUp = false;
 
     public Device(long id, boolean enabled, boolean selected, String username, String password, int keepAlive) {
         if (id > 0L)
@@ -74,6 +78,14 @@ public class Device implements Serializable {
 
     public int getKeepAlive() {
         return keepAlive;
+    }
+
+    public boolean isUp() {
+        return isUp;
+    }
+
+    public void setUp(boolean up) {
+        isUp = up;
     }
 
     public Device cloneWithEnabled(boolean isEnabled) {
