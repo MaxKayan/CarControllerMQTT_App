@@ -49,7 +49,7 @@ public class WqttClient {
     }
 
     public void connect() {
-        Log.d(TAG, "connect: " + device.getUsername());
+        Log.i(TAG, "connect: " + device.getUsername());
         try {
             client.connect(options, null, new IMqttActionListener() {
                 @Override
@@ -73,7 +73,11 @@ public class WqttClient {
     }
 
     public void disconnect() {
-        Log.d(TAG, "disconnect: " + device.getUsername());
+        if (!client.isConnected()) {
+            Log.d(TAG, "disconnect: client is already disconnected");
+            return;
+        }
+
         try {
             client.disconnect();
         } catch (MqttException e) {

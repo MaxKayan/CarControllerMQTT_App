@@ -59,6 +59,7 @@ public class DevicesFragment extends Fragment {
 
             @Override
             public void setEnabled(boolean enabled, Device device) {
+                Log.d(TAG, "setEnabled: changing enabled state on device " + device.getUsername() + " to - " + enabled);
                 viewModel.setEnabledOnDevice(enabled, device);
             }
         });

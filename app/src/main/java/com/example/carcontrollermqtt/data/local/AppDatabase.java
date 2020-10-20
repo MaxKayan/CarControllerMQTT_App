@@ -24,22 +24,24 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
-            instance = Room.databaseBuilder(context, AppDatabase.class, "carMQTT_database")
-                    .fallbackToDestructiveMigration()
-                    .addCallback(new Callback() {
-                        @Override
-                        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                            super.onCreate(db);
-                            Log.d(TAG, "onCreate: Room database created");
-                        }
+            synchronized (AppDatabase.class) {
+                instance = Room.databaseBuilder(context, AppDatabase.class, "carMQTT_database")
+                        .fallbackToDestructiveMigration()
+                        .addCallback(new Callback() {
+                            @Override
+                            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                super.onCreate(db);
+                                Log.d(TAG, "onCreate: Room database created");
+                            }
 
-                        @Override
-                        public void onOpen(@NonNull SupportSQLiteDatabase db) {
-                            super.onOpen(db);
-                            Log.d(TAG, "onOpen: Database accessed: "+db.getPageSize());
-                        }
-                    })
-                    .build();
+                            @Override
+                            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                                super.onOpen(db);
+                                Log.d(TAG, "onOpen: Database accessed: " + db.getPageSize());
+                            }
+                        })
+                        .build();
+            }
         }
         return instance;
     }

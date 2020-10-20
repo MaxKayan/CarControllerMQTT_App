@@ -78,7 +78,7 @@ public class DevicesViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     Log.d(TAG, "setEnabledOnDevice: Success");
-//                    message.postValue("Связь с устройством " + device.getUsername() + (enabled ? " включена" : " отключена"));
+                    message.postValue("Связь с устройством " + device.getUsername() + (enabled ? " включена" : " отключена"));
                 });
     }
 }

@@ -1,6 +1,7 @@
 package com.example.carcontrollermqtt;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,6 +15,7 @@ import com.example.carcontrollermqtt.databinding.ActivityMainBinding;
 import com.example.carcontrollermqtt.service.WqttClientManager;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     MainViewModel viewModel;
     private ActivityMainBinding binding;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         wqttClientManager = WqttClientManager.getInstance(this);
+        Log.d(TAG, "onCreate: got wqqt manager instance - " + wqttClientManager);
 
         database.deviceDao().observeDevices().observe(this, devices -> wqttClientManager.postDeviceList(devices));
     }

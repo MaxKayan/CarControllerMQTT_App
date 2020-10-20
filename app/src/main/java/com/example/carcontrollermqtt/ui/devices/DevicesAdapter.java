@@ -21,7 +21,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceViewHolder> {
     private static final String TAG = "DevicesAdapter";
-    private static final DiffUtil.ItemCallback<Device> DIFF_CALLBACK = new DiffUtil.ItemCallback<Device>() {
+    public static final DiffUtil.ItemCallback<Device> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<Device>() {
         @Override
         public boolean areItemsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
             return oldItem.getId() == newItem.getId();
@@ -39,7 +39,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
     private final DeviceViewHolder.OnDeviceCardInteraction editClickCallback;
 
     public DevicesAdapter(DeviceViewHolder.OnDeviceCardInteraction editClickCallback) {
-        super(DIFF_CALLBACK);
+        super(DEVICE_ITEM_CALLBACK);
         this.editClickCallback = editClickCallback;
     }
 
@@ -57,7 +57,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
         Device currentItem = getItem(position);
-        holder.bind(position, currentItem, editClickCallback);
+        holder.bind(currentItem, editClickCallback);
     }
 
     static class DeviceViewHolder extends RecyclerView.ViewHolder {
@@ -83,15 +83,21 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             switchEnable = binding.switchEnable;
         }
 
-        void bind(int pos, Device device, OnDeviceCardInteraction callbacks) {
+        void bind(Device device, OnDeviceCardInteraction callbacks) {
             Log.d(TAG, "binding " + device.getUsername());
             deviceId.setText(String.valueOf(device.getId()));
 
+            switchEnable.setOnCheckedChangeListener(null);
             switchEnable.setChecked(device.isEnabled());
-            switchEnable.setOnClickListener(v -> {
-                Log.d(TAG, "bind: setting enabled for " + device.getUsername());
-                callbacks.setEnabled(switchEnable.isEnabled(), device);
+//            switchEnable.setOnClickListener(v -> {
+//                Log.d(TAG, "bind: setting enabled for " + device.getUsername());
+//                callbacks.setEnabled(switchEnable.isEnabled(), device);
+//            });
+            switchEnable.setOnCheckedChangeListener((compoundButton, b) -> {
+                Log.d(TAG, "bind: switch checked changed on " + device.getUsername() + " to - " + b);
+                callbacks.setEnabled(b, device);
             });
+
             textStatus.setText(device.isEnabled() ? R.string.device_enabled : R.string.device_disabled);
 
             if (device.isSelected()) {
