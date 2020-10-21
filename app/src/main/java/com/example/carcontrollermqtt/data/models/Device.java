@@ -4,21 +4,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity(tableName = "devices")
+@Entity(tableName = "devices",
+        indices = {@Index(value = {"username"}, unique = true)})
 public class Device implements Serializable {
+    private final boolean enabled;
+    private final boolean selected;
+    private final String username;
+    private final String password;
+    private final int keepAlive;
     @PrimaryKey(autoGenerate = true)
     private long id;
-    private boolean enabled;
-    private boolean selected;
-    private String username;
-    private String password;
-    private int keepAlive;
-
     @Nullable
     @Ignore
     private DeviceEvent event;

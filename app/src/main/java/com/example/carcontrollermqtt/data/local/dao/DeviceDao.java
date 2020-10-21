@@ -10,6 +10,7 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.example.carcontrollermqtt.data.models.Device;
+import com.example.carcontrollermqtt.data.models.transactions.DeviceWithMessages;
 
 import java.util.List;
 
@@ -27,6 +28,10 @@ public interface DeviceDao {
     @Transaction
     @Query("SELECT * FROM devices WHERE selected = 1")
     Single<Device> getSelectedDevice();
+
+    @Transaction
+    @Query("SELECT * FROM devices WHERE id = :id")
+    Single<DeviceWithMessages> getDeviceWithMessages(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertDevice(Device device);
