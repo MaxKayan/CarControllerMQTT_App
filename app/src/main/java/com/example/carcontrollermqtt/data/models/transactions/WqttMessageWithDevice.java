@@ -13,5 +13,5 @@ public class WqttMessageWithDevice {
             parentColumn = "deviceId",
             entityColumn = "id"
     )
-    public Device carModels;
+    public Device device;
 }

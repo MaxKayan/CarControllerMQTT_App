@@ -2,9 +2,6 @@ package com.example.carcontrollermqtt.data.local.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
@@ -18,12 +15,12 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 
 @Dao
-public interface DeviceDao {
+public interface DeviceDao extends BaseDao<Device> {
     @Query("SELECT * FROM devices")
-    LiveData<List<Device>> observeDevices();
+    LiveData<List<Device>> observeAll();
 
     @Query("SELECT * FROM devices")
-    Single<List<Device>> getDevices();
+    Single<List<Device>> getAll();
 
     @Transaction
     @Query("SELECT * FROM devices WHERE selected = 1")
@@ -33,18 +30,7 @@ public interface DeviceDao {
     @Query("SELECT * FROM devices WHERE id = :id")
     Single<DeviceWithMessages> getDeviceWithMessages(long id);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insertDevice(Device device);
-
     @Update
-    Completable updateDevice(Device device);
+    Completable updateMultiple(Device... devices);
 
-    @Update
-    Completable updateDeviceList(List<Device> list);
-
-    @Update
-    Completable updateMultipleDevices(Device... devices);
-
-    @Delete
-    Completable deleteDevice(Device device);
 }

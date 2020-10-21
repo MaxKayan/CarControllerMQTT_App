@@ -45,6 +45,6 @@ public class MainActivity extends AppCompatActivity {
         wqttClientManager = WqttClientManager.getInstance(this);
         Log.d(TAG, "onCreate: got wqqt manager instance - " + wqttClientManager);
 
-        database.deviceDao().observeDevices().observe(this, devices -> wqttClientManager.postDeviceList(devices));
+        database.deviceDao().observeAll().observe(this, devices -> wqttClientManager.postDeviceList(devices));
     }
 }

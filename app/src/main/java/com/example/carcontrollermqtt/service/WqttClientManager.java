@@ -9,9 +9,12 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.carcontrollermqtt.data.local.AppDatabase;
+import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.data.models.WqttClient;
+import com.example.carcontrollermqtt.data.models.WqttMessage;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -22,10 +25,13 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import io.reactivex.schedulers.Schedulers;
 
 public class WqttClientManager {
     public static final String SERVER_URI = "wss://wqtt.ru:6618/";
@@ -34,8 +40,9 @@ public class WqttClientManager {
 
     // TODO: A way to avoid passing context to this singleton?
     private final Context context;
-//    private AppDatabase database;
+    //    private AppDatabase database;
 //    private DeviceDao deviceDao;
+    private final WqttMessageDao messageDao;
 
     private final WqttClientDiffUtil deviceListManager;
     private final WqttClientEventBus eventBus;
@@ -46,6 +53,7 @@ public class WqttClientManager {
     private WqttClientManager(Context appContext) {
         context = appContext.getApplicationContext();
         eventBus = WqttClientEventBus.getInstance();
+        messageDao = AppDatabase.getInstance(appContext).messageDao();
         deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
@@ -110,14 +118,10 @@ public class WqttClientManager {
     private void handleClientConnection(WqttClient wqtt) {
         boolean deviceEnabled = wqtt.getDevice().isEnabled();
         boolean mqttConnected = wqtt.getClient().isConnected();
-//        Log.d(TAG, "handleClientConnection: processing - " + wqtt.getDevice().getUsername() +
-//                "/n enabled - " + deviceEnabled + " : connected - " + mqttConnected);
 
         if (deviceEnabled && !mqttConnected) {
-//            Log.d(TAG, "handleClientConnection: device is enabled but not connected - connecting...");
             wqtt.connect();
         } else if (!deviceEnabled && mqttConnected) {
-//            Log.d(TAG, "handleClientConnection: device is disabled but connected - disconnecting...");
             wqtt.disconnect();
         }
     }
@@ -142,6 +146,9 @@ public class WqttClientManager {
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
                 Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
+                messageDao.insert(WqttMessage.newInstance(device.getId(), Calendar.getInstance().getTime(), true, topic, message.toString()))
+                        .subscribeOn(Schedulers.io())
+                        .subscribe();
             }
 
             @Override

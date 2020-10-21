@@ -44,7 +44,7 @@ public class DevicesViewModel extends AndroidViewModel {
 
         WqttClientEventBus eventBus = WqttClientEventBus.getInstance();
 
-        devicesViewMerger.addSource(deviceDao.observeDevices(), devices -> {
+        devicesViewMerger.addSource(deviceDao.observeAll(), devices -> {
             List<Device> newList = devices.stream().map(device -> {
                 String key = device.getUsername();
                 if (!knownDevices.contains(key)) {
@@ -90,7 +90,7 @@ public class DevicesViewModel extends AndroidViewModel {
     }
 
     void deleteDevice(Device device) {
-        deviceDao.deleteDevice(device)
+        deviceDao.delete(device)
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     Log.d(TAG, "deleteDevice: Device deleted");
@@ -99,10 +99,10 @@ public class DevicesViewModel extends AndroidViewModel {
     }
 
     void selectDevice(Device device) {
-        deviceDao.getDevices()
+        deviceDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .subscribe(devices -> {
-                    deviceDao.updateDeviceList(devices.stream()
+                    deviceDao.updateAll(devices.stream()
                             .map(item -> item.getId() == device.getId() ? item.cloneWithSelected(true) : item.cloneWithSelected(false))
                             .collect(Collectors.toList())
                     )
@@ -113,7 +113,7 @@ public class DevicesViewModel extends AndroidViewModel {
     }
 
     void setEnabledOnDevice(boolean enabled, Device device) {
-        deviceDao.updateDevice(device.cloneWithEnabled(enabled))
+        deviceDao.update(device.cloneWithEnabled(enabled))
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     Log.d(TAG, "setEnabledOnDevice: Success");

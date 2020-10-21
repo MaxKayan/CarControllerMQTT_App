@@ -8,15 +8,19 @@ import androidx.annotation.Nullable;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.carcontrollermqtt.data.converter.DateConverter;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
+import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
 import com.example.carcontrollermqtt.data.models.Device;
+import com.example.carcontrollermqtt.data.models.WqttMessage;
 
-@Database(entities = {Device.class},
-        version = 6,
+@Database(entities = {Device.class, WqttMessage.class},
+        version = 8,
         exportSchema = false)
-//@TypeConverters({DateConverter.class})
+@TypeConverters({DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static final String TAG = "AppDatabase";
 
@@ -52,5 +56,7 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract DeviceDao deviceDao();
+
+    public abstract WqttMessageDao messageDao();
 
 }

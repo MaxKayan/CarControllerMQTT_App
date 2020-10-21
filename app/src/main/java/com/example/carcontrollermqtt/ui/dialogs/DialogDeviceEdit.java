@@ -117,7 +117,7 @@ public class DialogDeviceEdit extends DialogFragment {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     private void writeToDB() {
-        deviceDao.insertDevice(getResult())
+        deviceDao.insert(getResult())
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     Log.d(TAG, "setupListeners: Inserted new device");
