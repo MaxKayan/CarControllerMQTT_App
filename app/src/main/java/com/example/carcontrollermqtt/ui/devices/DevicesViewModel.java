@@ -16,11 +16,10 @@ import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.service.WqttClientEventBus;
-import com.example.carcontrollermqtt.service.WqttClientManager;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.reactivex.schedulers.Schedulers;
@@ -30,38 +29,34 @@ import io.reactivex.schedulers.Schedulers;
 public class DevicesViewModel extends AndroidViewModel {
     private static final String TAG = "DevicesViewModel";
 
-    private final AppDatabase database;
     private final DeviceDao deviceDao;
 
-    private final Map<String, DeviceEvent> lastDeviceEvents = new HashMap<>();
-
-    private final WqttClientManager wqttClientManager;
+    //    private final Map<String, DeviceEvent> lastDeviceEvents = new HashMap<>();
+    private final Set<String> knownDevices = new HashSet<>();
 
     private final MutableLiveData<String> message = new MutableLiveData<>();
     private final MediatorLiveData<List<Device>> devicesViewMerger = new MediatorLiveData<>();
 
     public DevicesViewModel(@NonNull Application application) {
         super(application);
-        database = AppDatabase.getInstance(application);
+        AppDatabase database = AppDatabase.getInstance(application);
         deviceDao = database.deviceDao();
-        wqttClientManager = WqttClientManager.getInstance(application);
 
         WqttClientEventBus eventBus = WqttClientEventBus.getInstance();
 
         devicesViewMerger.addSource(deviceDao.observeDevices(), devices -> {
             List<Device> newList = devices.stream().map(device -> {
                 String key = device.getUsername();
-                if (!lastDeviceEvents.containsKey(key)) {
-                    lastDeviceEvents.put(key, null);
+                if (!knownDevices.contains(key)) {
+                    knownDevices.add(key);
 
                     Log.d(TAG, "DevicesViewModel: new device, adding source");
                     devicesViewMerger.addSource(eventBus.getChannel(key), getEventBusObserver(key, device));
-
-                } else {
-                    Log.d(TAG, "DevicesViewModel: key exists, setting to device - " + lastDeviceEvents.get(key));
-                    device.setEvent(lastDeviceEvents.get(key));
                 }
 
+                device.setEvent(eventBus.getLastEventForDevice(device));
+
+                Log.d(TAG, "DevicesViewModel: set event from saved - " + device.getUsername() + " - " + device.getEvent());
                 return device;
             }).collect(Collectors.toList());
 
@@ -71,9 +66,6 @@ public class DevicesViewModel extends AndroidViewModel {
 
     private Observer<DeviceEvent> getEventBusObserver(String key, Device device) {
         return deviceEvent -> {
-            lastDeviceEvents.put(key, deviceEvent);
-            Log.i(TAG, "getEventBusObserver: event value in map - " + lastDeviceEvents.get(key));
-
             Log.d(TAG, "DevicesViewModel: new event arrived - " + deviceEvent);
             List<Device> currentList = devicesViewMerger.getValue();
             if (currentList != null) {
@@ -125,7 +117,7 @@ public class DevicesViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     Log.d(TAG, "setEnabledOnDevice: Success");
-                    message.postValue("Связь с устройством " + device.getUsername() + (enabled ? " включена" : " отключена"));
+//                    message.postValue("Связь с устройством " + device.getUsername() + (enabled ? " включена" : " отключена"));
                 });
     }
 }

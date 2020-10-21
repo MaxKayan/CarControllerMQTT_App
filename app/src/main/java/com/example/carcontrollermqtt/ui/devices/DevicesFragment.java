@@ -88,7 +88,7 @@ public class DevicesFragment extends Fragment {
 
     private void subscribeObservers(View view) {
         viewModel.observeDevices().observe(getViewLifecycleOwner(), devices -> {
-            Log.d(TAG, "subscribeObservers: new list with event - " + devices.get(0).getEvent());
+            Log.d(TAG, "subscribeObservers: new list with event - " + (devices.size() > 0 ? devices.get(0).getEvent() : devices));
             adapter.submitList(devices);
         });
 

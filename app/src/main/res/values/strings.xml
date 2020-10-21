@@ -9,6 +9,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="device_name_digits">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-</string>
-    <string name="device_disabled">Отключен</string>
-    <string name="device_enabled">Включен</string>
+    <string name="device_disabled">Отключено</string>
+    <string name="device_enabled">Включено</string>
 </resources>

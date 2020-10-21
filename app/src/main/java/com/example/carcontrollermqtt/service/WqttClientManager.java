@@ -151,6 +151,8 @@ public class WqttClientManager {
         });
 
         WqttClient wqtt = new WqttClient(device, options, client, (connDevice, connClient, connOptions) -> {
+            eventChannel.setValue(DeviceEvent.pending(device, null));
+            Log.i(TAG, "createClientForDevice: Connecting... - " + device.getUsername());
             try {
                 connClient.connect(options, null, new IMqttActionListener() {
                     @Override

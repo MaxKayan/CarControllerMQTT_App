@@ -48,7 +48,8 @@ public class WqttClientDiffUtil {
             @Override
             public void onRemoved(int position, int count) {
                 Log.d(TAG, "onRemoved: " + position + "count: " + count);
-                removeDevices(position, position + count - 1);
+                Log.d(TAG, "onRemoved: List size now is - " + mDiffer.getCurrentList().size());
+//                removeDevices(position, position + count - 1);
             }
 
             @Override

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.databinding.ItemDeviceBinding;
+import com.example.carcontrollermqtt.utils.DrawableCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -67,6 +69,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
     static class DeviceViewHolder extends RecyclerView.ViewHolder {
         private TextView deviceId, deviceName, textStatus;
         private ImageView iconConnected, iconDisconnected, iconError;
+        private ProgressBar progressBar;
         private MaterialButton buttonEdit;
         private View isSelected;
         private MaterialCardView cardDevice;
@@ -81,6 +84,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             isSelected = binding.isSelected;
             deviceName = binding.deviceName;
             textStatus = binding.textStatus;
+            progressBar = binding.progressBar;
             iconConnected = binding.iconConnected;
             iconDisconnected = binding.iconDisconnected;
             iconError = binding.iconError;
@@ -88,9 +92,9 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             switchEnable = binding.switchEnable;
         }
 
-        private int boolToVisibility(boolean isVisible) {
-            return isVisible ? View.VISIBLE : View.GONE;
-        }
+//        private int boolToVisibility(boolean isVisible) {
+//            return isVisible ? View.VISIBLE : View.GONE;
+//        }
 
         void bind(Device device, OnDeviceCardInteraction callbacks) {
             Log.i(TAG, "binding " + device.getUsername() + " event - " + device.getEvent());
@@ -98,16 +102,10 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
 
             switchEnable.setOnCheckedChangeListener(null);
             switchEnable.setChecked(device.isEnabled());
-//            switchEnable.setOnClickListener(v -> {
-//                Log.d(TAG, "bind: setting enabled for " + device.getUsername());
-//                callbacks.setEnabled(switchEnable.isEnabled(), device);
-//            });
             switchEnable.setOnCheckedChangeListener((compoundButton, b) -> {
                 Log.d(TAG, "bind: switch checked changed on " + device.getUsername() + " to - " + b);
                 callbacks.setEnabled(b, device);
             });
-
-            textStatus.setText(device.isEnabled() ? R.string.device_enabled : R.string.device_disabled);
 
             if (device.isSelected()) {
                 isSelected.setVisibility(View.VISIBLE);
@@ -125,22 +123,34 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
 
             DeviceEvent event = device.getEvent();
             if (event != null) {
-                switch (event.getStatus()) {
-                    case CONNECTED:
-                        iconConnected.setVisibility(View.VISIBLE);
-                        iconDisconnected.setVisibility(View.GONE);
-                        break;
-                    case DISCONNECTED:
-                        iconDisconnected.setVisibility(View.VISIBLE);
-                        iconConnected.setVisibility(View.GONE);
-                        break;
-                    case ERROR:
-                        iconError.setVisibility(View.VISIBLE);
-                        iconDisconnected.setVisibility(View.GONE);
-//                        Toast.makeText(cardDevice.getContext(), event.getMessage(), Toast.LENGTH_LONG).show();
-                        break;
-                }
+                selectStatusDisplay(event.getStatus());
             }
+        }
+
+        private void selectStatusDisplay(DeviceEvent.DeviceEventStatus status) {
+            switch (status) {
+                case PENDING:
+                    textStatus.setText("Подключение...");
+                    break;
+                case CONNECTED:
+                    textStatus.setText("Подключено");
+                    break;
+                case DISCONNECTED:
+                    textStatus.setText("Отключено");
+                    break;
+                case ERROR:
+                    textStatus.setText("Ошибка");
+                    break;
+            }
+            boolean isLoading = status.equals(DeviceEvent.DeviceEventStatus.PENDING);
+            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            if (isLoading) {
+                DrawableCompat.setColorFilter(progressBar.getIndeterminateDrawable(),
+                        cardDevice.getResources().getColor(R.color.colorBgStart));
+            }
+            iconConnected.setVisibility(status.equals(DeviceEvent.DeviceEventStatus.CONNECTED) ? View.VISIBLE : View.GONE);
+            iconDisconnected.setVisibility(status.equals(DeviceEvent.DeviceEventStatus.DISCONNECTED) ? View.VISIBLE : View.GONE);
+            iconError.setVisibility(status.equals(DeviceEvent.DeviceEventStatus.ERROR) ? View.VISIBLE : View.GONE);
         }
 
         public interface OnDeviceCardInteraction {
