@@ -24,7 +24,7 @@ public interface DeviceDao extends BaseDao<Device> {
 
     @Transaction
     @Query("SELECT * FROM devices WHERE selected = 1")
-    Single<Device> getSelectedDevice();
+    LiveData<Device> observeSelectedDevice();
 
     @Transaction
     @Query("SELECT * FROM devices WHERE id = :id")

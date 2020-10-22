@@ -45,15 +45,15 @@ public class WqttMessageManager {
 
     private final WqttClientManager clientManager;
 
-    private WqttMessageManager(Context context) {
+    private WqttMessageManager(Context context, WqttClientManager clientManager) {
         messageDao = AppDatabase.getInstance(context).messageDao();
         calendar = Calendar.getInstance();
-        clientManager = WqttClientManager.getInstance(context);
+        this.clientManager = clientManager;
     }
 
-    public static WqttMessageManager getInstance(Context context) {
+    public static WqttMessageManager getInstance(Context context, WqttClientManager clientManager) {
         if (instance == null) {
-            instance = new WqttMessageManager(context);
+            instance = new WqttMessageManager(context, clientManager);
         }
 
         return instance;
@@ -71,11 +71,13 @@ public class WqttMessageManager {
             try {
                 MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
                 WqttMessage wqttMessage = WqttMessage.newInstance(device.getId(), mqttMessage.getId(), calendar.getTime(), false, topic, payload);
+                writeToDb(messageDao.insert(wqttMessage));
 
                 client.getClient().publish(topic, new MqttMessage(payload.getBytes()), null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
                         Log.d(TAG, "onSuccess: updating msg status");
+                        // TODO: Possible race condition - trying to update the row that doesn't exist yet
                         writeToDb(
                                 messageDao.update(wqttMessage.cloneWithStatus(WqttMessage.MessageStatus.DELIVERED))
                         );
@@ -89,8 +91,6 @@ public class WqttMessageManager {
                         );
                     }
                 });
-
-                writeToDb(messageDao.insert(wqttMessage));
             } catch (MqttException e) {
                 Log.e(TAG, "sendMessage: failed to send - " + e.getMessage(), e);
             }

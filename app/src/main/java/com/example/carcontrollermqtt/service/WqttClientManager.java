@@ -2,7 +2,6 @@ package com.example.carcontrollermqtt.service;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -49,7 +48,7 @@ public class WqttClientManager {
         context = appContext.getApplicationContext();
         eventBus = WqttClientEventBus.getInstance();
         messageDao = AppDatabase.getInstance(appContext).messageDao();
-        messageManager = WqttMessageManager.getInstance(appContext);
+        messageManager = WqttMessageManager.getInstance(appContext, this);
         deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
@@ -79,13 +78,17 @@ public class WqttClientManager {
         return instance;
     }
 
+    public WqttMessageManager getMessageManager() {
+        return messageManager;
+    }
+
     public WqttClient getWqttClient(Device device) {
         return getWqttClient(device.getUsername());
     }
 
     @Nullable
     public WqttClient getWqttClient(String username) {
-            return wqttClientsMap.get(username);
+        return wqttClientsMap.get(username);
     }
 
     public void postDeviceList(List<Device> devices) {
@@ -121,7 +124,7 @@ public class WqttClientManager {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
-                Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
 
                 messageManager.receiveMessage(device, topic, message);
             }

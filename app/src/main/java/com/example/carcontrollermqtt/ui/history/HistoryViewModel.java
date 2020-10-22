@@ -1,5 +1,6 @@
 package com.example.carcontrollermqtt.ui.history;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
@@ -8,15 +9,11 @@ import androidx.lifecycle.LiveData;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
-import com.example.carcontrollermqtt.data.models.WqttClient;
-import com.example.carcontrollermqtt.data.models.WqttMessage;
+import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.transactions.WqttMessageWithDevice;
 import com.example.carcontrollermqtt.service.WqttClientManager;
+import com.example.carcontrollermqtt.service.WqttMessageManager;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.schedulers.Schedulers;
@@ -24,13 +21,23 @@ import io.reactivex.schedulers.Schedulers;
 public class HistoryViewModel extends AndroidViewModel {
 
     private final WqttMessageDao messageDao;
-
     private final WqttClientManager clientManager;
+    private Device selectedDevice;
+    private WqttMessageManager messageManager;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     public HistoryViewModel(@NonNull Application application) {
         super(application);
         this.messageDao = AppDatabase.getInstance(application).messageDao();
+        AppDatabase.getInstance(application).deviceDao().getAll()
+                .subscribeOn(Schedulers.io())
+                .subscribe(devices -> {
+                    selectedDevice = devices.get(0);
+                });
+
         clientManager = WqttClientManager.getInstance(application);
+        messageManager = clientManager.getMessageManager();
     }
 
     LiveData<List<WqttMessageWithDevice>> observeMessagesWithDevice() {
@@ -38,16 +45,6 @@ public class HistoryViewModel extends AndroidViewModel {
     }
 
     void publishMessage(String topic, String payload) {
-        WqttClient client = clientManager.getWqttClient("testUser");
-        if (client != null) {
-            try {
-                messageDao.insert(new WqttMessage(0L, 1, Calendar.getInstance().getTime(), false, topic, payload))
-                        .subscribeOn(Schedulers.io())
-                        .subscribe();
-                client.getClient().publish(topic, new MqttMessage(payload.getBytes()));
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        }
+        messageManager.sendMessage(selectedDevice, topic, payload);
     }
 }
