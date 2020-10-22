@@ -44,6 +44,7 @@ public class DevicesViewModel extends AndroidViewModel {
 
         WqttClientEventBus eventBus = WqttClientEventBus.getInstance();
 
+        // TODO: is this system over-engineered and i should instead just write device status enum to Room database, cleaning all states upon launch?
         devicesViewMerger.addSource(deviceDao.observeAll(), devices -> {
             List<Device> newList = devices.stream().map(device -> {
                 String key = device.getUsername();

@@ -21,26 +21,31 @@ import java.util.Objects;
                 )
         })
 public class WqttMessage {
-    @PrimaryKey(autoGenerate = true)
-    private long id;
     private final long deviceId;
+    private final int mqttMessageId;
+    private final MessageStatus status;
     private final Date dateTime;
     private final boolean isIncoming;
     private final String topic;
     private final String payload;
+    @PrimaryKey(autoGenerate = true)
+    private long id;
 
-    public WqttMessage(long id, long deviceId, Date dateTime, boolean isIncoming, String topic, String payload) {
+    public WqttMessage(long id, long deviceId, int mqttMessageId, MessageStatus status, Date dateTime, boolean isIncoming, String topic, String payload) {
         if (id != 0L)
             this.id = id;
         this.deviceId = deviceId;
+        this.mqttMessageId = mqttMessageId;
+        this.status = status;
         this.dateTime = dateTime;
         this.isIncoming = isIncoming;
         this.topic = topic;
         this.payload = payload;
     }
 
-    public static WqttMessage newInstance(long deviceId, Date dateTime, boolean isIncoming, String topic, String payload) {
-        return new WqttMessage(0L, deviceId, dateTime, isIncoming, topic, payload);
+    public static WqttMessage newInstance(long deviceId, int mqttMessageId, Date dateTime, boolean isIncoming, String topic, String payload) {
+        return new WqttMessage(0L, deviceId, mqttMessageId, isIncoming ? MessageStatus.DELIVERED : MessageStatus.PENDING,
+                dateTime, isIncoming, topic, payload);
     }
 
     @Override
@@ -48,9 +53,11 @@ public class WqttMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WqttMessage that = (WqttMessage) o;
-        return id == that.id &&
-                deviceId == that.deviceId &&
+        return deviceId == that.deviceId &&
+                mqttMessageId == that.mqttMessageId &&
                 isIncoming == that.isIncoming &&
+                id == that.id &&
+                status == that.status &&
                 Objects.equals(dateTime, that.dateTime) &&
                 Objects.equals(topic, that.topic) &&
                 Objects.equals(payload, that.payload);
@@ -58,7 +65,7 @@ public class WqttMessage {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, deviceId, dateTime, isIncoming, topic, payload);
+        return Objects.hash(deviceId, mqttMessageId, status, dateTime, isIncoming, topic, payload, id);
     }
 
     public long getId() {
@@ -67,6 +74,14 @@ public class WqttMessage {
 
     public long getDeviceId() {
         return deviceId;
+    }
+
+    public int getMqttMessageId() {
+        return mqttMessageId;
+    }
+
+    public MessageStatus getStatus() {
+        return status;
     }
 
     public Date getDateTime() {
@@ -83,5 +98,15 @@ public class WqttMessage {
 
     public String getPayload() {
         return payload;
+    }
+
+    public enum MessageStatus {
+        PENDING,
+        DELIVERED,
+        FAILED
+    }
+
+    public WqttMessage cloneWithStatus(MessageStatus newStatus) {
+        return new WqttMessage(this.id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
     }
 }

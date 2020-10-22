@@ -5,7 +5,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
@@ -13,7 +12,6 @@ import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.data.models.WqttClient;
-import com.example.carcontrollermqtt.data.models.WqttMessage;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -24,13 +22,10 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import io.reactivex.schedulers.Schedulers;
 
 public class WqttClientManager {
     public static final String SERVER_URI = "wss://wqtt.ru:6618/";
@@ -45,22 +40,21 @@ public class WqttClientManager {
 
     private final WqttClientDiffUtil deviceListManager;
     private final WqttClientEventBus eventBus;
+    private final WqttMessageManager messageManager;
 
     // Device username is the key
-    private final MutableLiveData<Map<String, WqttClient>> wqttClientsLD = new MutableLiveData<>(new HashMap<>());
+    private final Map<String, WqttClient> wqttClientsMap = new HashMap<>();
 
     private WqttClientManager(Context appContext) {
         context = appContext.getApplicationContext();
         eventBus = WqttClientEventBus.getInstance();
         messageDao = AppDatabase.getInstance(appContext).messageDao();
+        messageManager = WqttMessageManager.getInstance(appContext);
         deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
                 if (device.isEnabled())
-                    editDeviceMapLiveData(deviceMap -> {
-                        deviceMap.put(device.getUsername(), createClientForDevice(device));
-                        return deviceMap;
-                    });
+                    wqttClientsMap.put(device.getUsername(), createClientForDevice(device));
             }
 
             @Override
@@ -69,11 +63,7 @@ public class WqttClientManager {
                 WqttClient wqttClient = getWqttClient(device);
                 if (wqttClient != null) {
                     wqttClient.disconnect();
-
-                    editDeviceMapLiveData(deviceMap -> {
-                        deviceMap.remove(key);
-                        return deviceMap;
-                    });
+                    wqttClientsMap.remove(key);
                 }
             }
         });
@@ -89,29 +79,13 @@ public class WqttClientManager {
         return instance;
     }
 
-    public LiveData<Map<String, WqttClient>> observeWqttClients() {
-        return wqttClientsLD;
-    }
-
     public WqttClient getWqttClient(Device device) {
         return getWqttClient(device.getUsername());
     }
 
     @Nullable
     public WqttClient getWqttClient(String username) {
-        Map<String, WqttClient> deviceMap = wqttClientsLD.getValue();
-        if (deviceMap != null) {
-            return deviceMap.get(username);
-        }
-
-        return null;
-    }
-
-    private void editDeviceMapLiveData(DeviceMapAction action) {
-        Map<String, WqttClient> deviceMap = wqttClientsLD.getValue();
-        if (deviceMap != null) {
-            wqttClientsLD.setValue(action.run(deviceMap));
-        }
+            return wqttClientsMap.get(username);
     }
 
     public void postDeviceList(List<Device> devices) {
@@ -142,16 +116,14 @@ public class WqttClientManager {
             public void connectionLost(Throwable cause) {
                 Log.w(TAG, "connectionLost: " + device.getUsername(), cause);
                 eventChannel.postValue(DeviceEvent.disconnected(device, cause == null ? null : cause.getMessage()));
-
             }
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
                 Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
-                messageDao.insert(WqttMessage.newInstance(device.getId(), Calendar.getInstance().getTime(), true, topic, message.toString()))
-                        .subscribeOn(Schedulers.io())
-                        .subscribe();
+
+                messageManager.receiveMessage(device, topic, message);
             }
 
             @Override

@@ -15,6 +15,8 @@ import java.util.Objects;
 public class Device implements Serializable {
     private final boolean enabled;
     private final boolean selected;
+    private final String label;
+    private final String baseTopic;
     private final String username;
     private final String password;
     private final int keepAlive;
@@ -24,26 +26,29 @@ public class Device implements Serializable {
     @Ignore
     private DeviceEvent event;
 
-    public Device(long id, boolean enabled, boolean selected, String username, String password, int keepAlive) {
+    public Device(long id, boolean enabled, boolean selected, String label, String baseTopic, String username, String password, int keepAlive) {
         if (id > 0L)
             this.id = id;
         this.enabled = enabled;
         this.selected = selected;
+        this.label = label;
+        this.baseTopic = baseTopic;
         this.username = username;
         this.password = password;
         this.keepAlive = keepAlive;
     }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Device device = (Device) o;
-        return id == device.id &&
-                enabled == device.enabled &&
+        return enabled == device.enabled &&
                 selected == device.selected &&
                 keepAlive == device.keepAlive &&
+                id == device.id &&
+                Objects.equals(label, device.label) &&
+                Objects.equals(baseTopic, device.baseTopic) &&
                 Objects.equals(username, device.username) &&
                 Objects.equals(password, device.password) &&
                 Objects.equals(event, device.event);
@@ -51,7 +56,7 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, enabled, selected, username, password, keepAlive, event);
+        return Objects.hash(enabled, selected, label, baseTopic, username, password, keepAlive, id, event);
     }
 
     @NonNull
@@ -70,6 +75,14 @@ public class Device implements Serializable {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getBaseTopic() {
+        return baseTopic;
     }
 
     public String getUsername() {
@@ -94,11 +107,11 @@ public class Device implements Serializable {
     }
 
     public Device cloneWithEnabled(boolean isEnabled) {
-        return new Device(this.id, isEnabled, this.selected, this.username, this.password, this.keepAlive);
+        return new Device(this.id, isEnabled, this.selected, this.label, this.baseTopic, this.username, this.password, this.keepAlive);
     }
 
     public Device cloneWithSelected(boolean isSelected) {
-        return new Device(this.id, this.enabled, isSelected, this.username, this.password, this.keepAlive);
+        return new Device(this.id, this.enabled, isSelected, this.label, this.baseTopic, this.username, this.password, this.keepAlive);
     }
 
 }

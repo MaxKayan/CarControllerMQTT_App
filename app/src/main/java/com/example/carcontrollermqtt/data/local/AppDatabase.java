@@ -18,7 +18,7 @@ import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.WqttMessage;
 
 @Database(entities = {Device.class, WqttMessage.class},
-        version = 8,
+        version = 9,
         exportSchema = false)
 @TypeConverters({DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
