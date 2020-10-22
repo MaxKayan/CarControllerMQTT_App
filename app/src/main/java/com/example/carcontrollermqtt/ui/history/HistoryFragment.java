@@ -4,32 +4,58 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.carcontrollermqtt.R;
+import com.example.carcontrollermqtt.databinding.FragmentHistoryBinding;
 
 public class HistoryFragment extends Fragment {
+    private static final String TAG = "HistoryFragment";
 
-    private HistoryViewModel historyViewModel;
+    private FragmentHistoryBinding binding;
+    private HistoryViewModel viewModel;
+    private MessagesAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        historyViewModel =
-                ViewModelProviders.of(this).get(HistoryViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        historyViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
+        binding = FragmentHistoryBinding.inflate(getLayoutInflater(), container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
+
+        setupListeners();
+        setupRecyclerView();
+        subscribeObservers(view);
+    }
+
+    private void setupListeners() {
+        binding.testSendBtn.setOnClickListener(view -> {
+            viewModel.publishMessage("/androidApp", "This is a test message sent from the Android app.");
         });
-        return root;
+    }
+
+    private void subscribeObservers(View view) {
+        viewModel.observeMessagesWithDevice().observe(getViewLifecycleOwner(), wqttMessageWithDevices -> {
+            adapter.submitList(wqttMessageWithDevices);
+        });
+    }
+
+    private void setupRecyclerView() {
+        adapter = new MessagesAdapter(() -> {
+            binding.recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+        });
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setAdapter(adapter);
     }
 }

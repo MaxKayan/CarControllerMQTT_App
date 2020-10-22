@@ -8,6 +8,8 @@ import androidx.room.Transaction;
 import com.example.carcontrollermqtt.data.models.WqttMessage;
 import com.example.carcontrollermqtt.data.models.transactions.WqttMessageWithDevice;
 
+import java.util.List;
+
 @Dao
 public interface WqttMessageDao extends BaseDao<WqttMessage> {
     @Query("SELECT * FROM messages")
@@ -15,7 +17,6 @@ public interface WqttMessageDao extends BaseDao<WqttMessage> {
 
     @Transaction
     @Query("SELECT * FROM messages")
-    LiveData<WqttMessageWithDevice> observeMessagesWithDevices();
-
+    LiveData<List<WqttMessageWithDevice>> observeMessagesWithDevices();
 
 }

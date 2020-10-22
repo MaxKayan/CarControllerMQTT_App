@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -94,11 +93,15 @@ public class WqttClientManager {
         return wqttClientsLD;
     }
 
+    public WqttClient getWqttClient(Device device) {
+        return getWqttClient(device.getUsername());
+    }
+
     @Nullable
-    public WqttClient getWqttClient(@NonNull Device device) {
+    public WqttClient getWqttClient(String username) {
         Map<String, WqttClient> deviceMap = wqttClientsLD.getValue();
         if (deviceMap != null) {
-            return deviceMap.get(device.getUsername());
+            return deviceMap.get(username);
         }
 
         return null;
