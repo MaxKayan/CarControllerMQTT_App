@@ -106,7 +106,7 @@ public class WqttMessage {
         FAILED
     }
 
-    public WqttMessage cloneWithStatus(MessageStatus newStatus) {
-        return new WqttMessage(this.id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
+    public WqttMessage cloneAndUpdate(long id, MessageStatus newStatus) {
+        return new WqttMessage(id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
     }
 }

@@ -91,7 +91,7 @@ public class WqttClientManager {
         return wqttClientsMap.get(username);
     }
 
-    public void postDeviceList(List<Device> devices) {
+    public void submitDeviceList(List<Device> devices) {
         deviceListManager.submitList(devices);
     }
 

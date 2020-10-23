@@ -8,10 +8,14 @@ import androidx.room.Update;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public interface BaseDao<T> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insert(T entity);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Single<Long> insertAndReadId(T entity);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertAll(List<T> list);

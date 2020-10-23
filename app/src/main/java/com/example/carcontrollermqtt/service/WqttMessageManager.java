@@ -1,5 +1,6 @@
 package com.example.carcontrollermqtt.service;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -32,6 +33,7 @@ public class WqttMessageManager {
 
         @Override
         public void onComplete() {
+            Log.d(TAG, "onComplete: database action succeeded");
         }
 
         @Override
@@ -65,35 +67,47 @@ public class WqttMessageManager {
         );
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
     public void sendMessage(Device device, String topic, String payload) {
         WqttClient client = clientManager.getWqttClient(device.getUsername());
         if (client != null) {
-            try {
-                MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
-                WqttMessage wqttMessage = WqttMessage.newInstance(device.getId(), mqttMessage.getId(), calendar.getTime(), false, topic, payload);
-                writeToDb(messageDao.insert(wqttMessage));
 
-                client.getClient().publish(topic, new MqttMessage(payload.getBytes()), null, new IMqttActionListener() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.d(TAG, "onSuccess: updating msg status");
-                        // TODO: Possible race condition - trying to update the row that doesn't exist yet
-                        writeToDb(
-                                messageDao.update(wqttMessage.cloneWithStatus(WqttMessage.MessageStatus.DELIVERED))
-                        );
-                    }
+            MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
+            WqttMessage wqttMessage = WqttMessage.newInstance(device.getId(), mqttMessage.getId(), calendar.getTime(), false, topic, payload);
+//                writeToDb(messageDao.insert(wqttMessage));
+            messageDao.insertAndReadId(wqttMessage)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe((id) -> {
+                        Log.d(TAG, "sendMessage: written and value is - " + id);
+                        try {
+                            client.getClient().publish(topic, new MqttMessage(payload.getBytes()), null, new IMqttActionListener() {
+                                @Override
+                                public void onSuccess(IMqttToken asyncActionToken) {
+                                    Log.d(TAG, "onSuccess: updating msg status");
+                                    writeToDb(
+                                            messageDao.update(wqttMessage.cloneAndUpdate(id, WqttMessage.MessageStatus.DELIVERED))
+                                    );
+                                }
 
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.e(TAG, "onFailure: failed to send", exception);
-                        writeToDb(
-                                messageDao.update(wqttMessage.cloneWithStatus(WqttMessage.MessageStatus.FAILED))
-                        );
-                    }
-                });
-            } catch (MqttException e) {
-                Log.e(TAG, "sendMessage: failed to send - " + e.getMessage(), e);
-            }
+                                @Override
+                                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                                    Log.e(TAG, "onFailure: failed to send", exception);
+                                    writeToDb(
+                                            messageDao.update(wqttMessage.cloneAndUpdate(id, WqttMessage.MessageStatus.FAILED))
+                                    );
+                                }
+                            });
+                        } catch (MqttException e) {
+                            Log.e(TAG, "sendMessage: failed to send - " + e.getMessage(), e);
+                            writeToDb(
+                                    messageDao.update(wqttMessage.cloneAndUpdate(id, WqttMessage.MessageStatus.FAILED))
+                            );
+                        }
+                    }, throwable -> {
+                        Log.e(TAG, "sendMessage: failed to write to DB", throwable);
+                    });
+
         }
     }
 

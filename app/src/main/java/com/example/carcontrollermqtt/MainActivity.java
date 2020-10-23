@@ -19,9 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     MainViewModel viewModel;
     private ActivityMainBinding binding;
-    private AppDatabase database;
 
-    private WqttClientManager wqttClientManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
-        database = AppDatabase.getInstance(this);
-
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -41,10 +37,5 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
-        wqttClientManager = WqttClientManager.getInstance(this);
-        Log.d(TAG, "onCreate: got wqqt manager instance - " + wqttClientManager);
-
-        database.deviceDao().observeAll().observe(this, devices -> wqttClientManager.postDeviceList(devices));
     }
 }
