@@ -20,6 +20,8 @@ public class HistoryFragment extends Fragment {
     private HistoryViewModel viewModel;
     private MessagesAdapter adapter;
 
+    private ModalBottomSheet bottomSheet;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHistoryBinding.inflate(getLayoutInflater(), container, false);
@@ -35,11 +37,19 @@ public class HistoryFragment extends Fragment {
         setupListeners();
         setupRecyclerView();
         subscribeObservers(view);
+
+        bottomSheet = new ModalBottomSheet((topic, payload) -> {
+            viewModel.publishMessage(topic, payload);
+        });
+    }
+
+    private void showModalSheet() {
+        bottomSheet.show(getParentFragmentManager(), ModalBottomSheet.TAG);
     }
 
     private void setupListeners() {
         binding.testSendBtn.setOnClickListener(view -> {
-            viewModel.publishMessage("/androidApp", "This is a test message sent from the Android app.");
+            showModalSheet();
         });
     }
 

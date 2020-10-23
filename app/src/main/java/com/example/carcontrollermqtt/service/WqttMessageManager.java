@@ -33,7 +33,6 @@ public class WqttMessageManager {
 
         @Override
         public void onComplete() {
-            Log.d(TAG, "onComplete: database action succeeded");
         }
 
         @Override
@@ -43,12 +42,14 @@ public class WqttMessageManager {
     };
     private static WqttMessageManager instance;
     private final Calendar calendar;
+    private final AppDatabase database;
     private final WqttMessageDao messageDao;
 
     private final WqttClientManager clientManager;
 
     private WqttMessageManager(Context context, WqttClientManager clientManager) {
-        messageDao = AppDatabase.getInstance(context).messageDao();
+        database = AppDatabase.getInstance(context);
+        messageDao = database.messageDao();
         calendar = Calendar.getInstance();
         this.clientManager = clientManager;
     }
@@ -65,6 +66,13 @@ public class WqttMessageManager {
         writeToDb(
                 messageDao.insert(WqttMessage.newInstance(device.getId(), message.getId(), calendar.getTime(), true, topic, message.toString()))
         );
+    }
+
+    public void sendMessage(String topic, String payload) {
+        Device selectedDevice = database.deviceDao().observeSelectedDevice().getValue();
+        if (selectedDevice != null) {
+            sendMessage(selectedDevice, topic, payload);
+        }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

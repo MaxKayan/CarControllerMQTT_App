@@ -22,7 +22,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:text="Тест отправки"
+        android:text="Тест"
         android:textColor="@android:color/white"
         app:icon="@drawable/ic_round_keyboard_arrow_left_24"
         app:iconPadding="4dp"

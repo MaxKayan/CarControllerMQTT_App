@@ -2,6 +2,7 @@ package com.example.carcontrollermqtt.ui.history;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -19,6 +20,7 @@ import java.util.List;
 import io.reactivex.schedulers.Schedulers;
 
 public class HistoryViewModel extends AndroidViewModel {
+    private static final String TAG = "HistoryViewModel";
 
     private final WqttMessageDao messageDao;
     private final WqttClientManager clientManager;
@@ -34,6 +36,8 @@ public class HistoryViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io())
                 .subscribe(devices -> {
                     selectedDevice = devices.get(0);
+                }, throwable -> {
+                    Log.e(TAG, "HistoryViewModel: failed to get instance");
                 });
 
         clientManager = WqttClientManager.getInstance(application);

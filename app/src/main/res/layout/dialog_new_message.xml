@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/topicInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Топик">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/topicEditText"
+            android:singleLine="true"
+            android:nextFocusForward="@id/payloadEditText"
+            android:inputType="textShortMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/payloadInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginRight="90dp"
+            android:hint="Сообщение">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/payloadEditText"
+                android:nextFocusForward="@id/send"
+                android:nextFocusRight="@id/send"
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/send"
+            style="@style/IconOnlyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            app:icon="@drawable/ic_baseline_send_24"
+            app:iconSize="32dp"
+            app:iconTint="@color/colorBgStart" />
+
+    </FrameLayout>
+
+</LinearLayout>
