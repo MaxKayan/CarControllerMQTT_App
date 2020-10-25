@@ -21,7 +21,7 @@ import java.util.Objects;
                 )
         })
 public class WqttMessage {
-    private final long deviceId;
+    private final Long deviceId;
     private final int mqttMessageId;
     private final MessageStatus status;
     private final Date dateTime;
@@ -72,7 +72,7 @@ public class WqttMessage {
         return id;
     }
 
-    public long getDeviceId() {
+    public Long getDeviceId() {
         return deviceId;
     }
 

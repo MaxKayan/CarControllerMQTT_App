@@ -67,5 +67,7 @@ public class HistoryFragment extends Fragment {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setItemAnimator(new MessageItemAnimator());
     }
 }

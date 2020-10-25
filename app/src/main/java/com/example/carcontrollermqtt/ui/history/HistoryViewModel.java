@@ -2,7 +2,6 @@ package com.example.carcontrollermqtt.ui.history;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -17,31 +16,19 @@ import com.example.carcontrollermqtt.service.WqttMessageManager;
 
 import java.util.List;
 
-import io.reactivex.schedulers.Schedulers;
-
 public class HistoryViewModel extends AndroidViewModel {
     private static final String TAG = "HistoryViewModel";
 
     private final WqttMessageDao messageDao;
-    private final WqttClientManager clientManager;
-    private Device selectedDevice;
-    private WqttMessageManager messageManager;
+    private final WqttMessageManager messageManager;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     public HistoryViewModel(@NonNull Application application) {
         super(application);
-        this.messageDao = AppDatabase.getInstance(application).messageDao();
-        AppDatabase.getInstance(application).deviceDao().getAll()
-                .subscribeOn(Schedulers.io())
-                .subscribe(devices -> {
-                    selectedDevice = devices.get(0);
-                }, throwable -> {
-                    Log.e(TAG, "HistoryViewModel: failed to get instance");
-                });
+        AppDatabase database = AppDatabase.getInstance(application);
+        this.messageDao = database.messageDao();
 
-        clientManager = WqttClientManager.getInstance(application);
-        messageManager = clientManager.getMessageManager();
+        messageManager = WqttClientManager.getInstance(application).getMessageManager();
     }
 
     LiveData<List<WqttMessageWithDevice>> observeMessagesWithDevice() {
@@ -49,6 +36,9 @@ public class HistoryViewModel extends AndroidViewModel {
     }
 
     void publishMessage(String topic, String payload) {
-        messageManager.sendMessage(selectedDevice, topic, payload);
+        Device selectedDevice = WqttClientManager.getSelectedDevice();
+        if (selectedDevice != null) {
+            messageManager.sendMessage(selectedDevice, topic, payload);
+        }
     }
 }

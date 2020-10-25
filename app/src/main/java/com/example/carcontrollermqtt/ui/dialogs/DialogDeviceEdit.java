@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.room.EmptyResultSetException;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
@@ -17,6 +18,7 @@ import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.DialogDeviceEditBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class DialogDeviceEdit extends DialogFragment {
@@ -71,37 +73,68 @@ public class DialogDeviceEdit extends DialogFragment {
     }
 
     private void setupListeners() {
-        binding.btnConfirm.setOnClickListener(v -> {
-            if (!validateInput()) return;
-
-            writeToDB();
-            dismiss();
-        });
+        binding.btnConfirm.setOnClickListener(v -> saveEditedDevice());
     }
 
-    private boolean layoutTextNotEmpty(TextInputLayout layout, String errorText) {
-        if (layout.getEditText().getText().toString().isEmpty()) {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressLint("CheckResult")
+    private void saveEditedDevice() {
+        DeviceOptions input = getValidInput();
+        if (input == null) return;
+
+        if (editedDevice == null || usernameWasChanged(input.username)) {
+            deviceDao.get(input.username)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess(device -> {
+                        Log.w(TAG, "saveEditedDevice: device name is occupied + " + device.getUsername());
+                        binding.inputNameLayout.setError("Логин уже используется");
+                    })
+                    .subscribe((device, throwable) -> {
+                        if (throwable instanceof EmptyResultSetException) {
+                            writeToDB(getResult(input.username, input.password));
+                            dismiss();
+                        }
+                    });
+
+        } else {
+            writeToDB(getResult(input.username, input.password));
+            dismiss();
+        }
+    }
+
+    private boolean usernameWasChanged(String newUsername) {
+        return editedDevice != null && !editedDevice.getUsername().equals(newUsername);
+    }
+
+    @Nullable
+    private DeviceOptions getValidInput() {
+        String username = String.valueOf(binding.inputName.getText());
+        String password = String.valueOf(binding.inputPassword.getText());
+        if (!validateInput(username, password)) return null;
+
+        return new DeviceOptions(username, password);
+    }
+
+    private boolean validateInput(String username, String password) {
+        boolean nameNotEmpty = layoutTextNotEmpty(binding.inputNameLayout, username, "Укажите имя устройства");
+        boolean passNotEmpty = layoutTextNotEmpty(binding.inputPasswordLayout, password, "Укажите пароль");
+
+        return nameNotEmpty && passNotEmpty;
+    }
+
+    private boolean layoutTextNotEmpty(TextInputLayout layout, String value, String errorText) {
+        if (value.isEmpty() || value.equals("null")) {
             layout.setError(errorText);
-            Log.d(TAG, "layoutTextNotEmpty: setting false");
             return false;
         } else {
             layout.setError(null);
-            Log.d(TAG, "layoutTextNotEmpty: setting true");
             return true;
         }
     }
 
-    private boolean validateInput() {
-        boolean nameValid = layoutTextNotEmpty(binding.inputNameLayout, "Укажите имя устройства");
-        boolean passValid = layoutTextNotEmpty(binding.inputPasswordLayout, "Укажите пароль");
-
-        return nameValid && passValid;
-    }
-
-    private Device getResult() {
+    private Device getResult(String name, String password) {
         Device result;
-        String name = binding.inputName.getText().toString();
-        String password = binding.inputPassword.getText().toString();
         String keepAlive = binding.inputKeepAlive.getText().toString();
         int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
@@ -116,12 +149,31 @@ public class DialogDeviceEdit extends DialogFragment {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
-    private void writeToDB() {
-        deviceDao.insert(getResult())
+    private void writeToDB(Device device) {
+        deviceDao.getSelectedDevice()
                 .subscribeOn(Schedulers.io())
-                .subscribe(() -> {
-                    Log.d(TAG, "setupListeners: Inserted new device");
+                .doOnSuccess(selectedDevice -> {
+                    Log.d(TAG, "writeToDB: selected device found" + device.getUsername());
+                    deviceDao.insert(device)
+                            .subscribe();
+                })
+                .subscribe((device1, throwable) -> {
+                    if (throwable instanceof EmptyResultSetException) {
+                        Log.w(TAG, "writeToDB: there's no selected device", throwable);
+                        deviceDao.insert(device.cloneWithSelected(true))
+                                .subscribe();
+                    }
                 });
+    }
+
+    private static class DeviceOptions {
+        String username;
+        String password;
+
+        public DeviceOptions(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
     }
 
 }

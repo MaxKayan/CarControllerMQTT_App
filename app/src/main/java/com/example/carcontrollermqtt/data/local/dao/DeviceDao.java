@@ -22,7 +22,9 @@ public interface DeviceDao extends BaseDao<Device> {
     @Query("SELECT * FROM devices")
     Single<List<Device>> getAll();
 
-    @Transaction
+    @Query("SELECT * FROM devices WHERE username = :name")
+    Single<Device> get(String name);
+
     @Query("SELECT * FROM devices WHERE selected = 1")
     LiveData<Device> observeSelectedDevice();
 

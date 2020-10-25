@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
-import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
+import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import com.example.carcontrollermqtt.data.models.WqttClient;
@@ -30,12 +30,13 @@ public class WqttClientManager {
     public static final String SERVER_URI = "wss://wqtt.ru:6618/";
     private static final String TAG = "WqttClientManager";
     private static WqttClientManager instance;
+    private static Device selectedDevice;
 
     // TODO: A way to avoid passing context to this singleton?
     private final Context context;
     //    private AppDatabase database;
 //    private DeviceDao deviceDao;
-    private final WqttMessageDao messageDao;
+    private final DeviceDao deviceDao;
 
     private final WqttClientDiffUtil deviceListManager;
     private final WqttClientEventBus eventBus;
@@ -47,7 +48,7 @@ public class WqttClientManager {
     private WqttClientManager(Context appContext) {
         context = appContext.getApplicationContext();
         eventBus = WqttClientEventBus.getInstance();
-        messageDao = AppDatabase.getInstance(appContext).messageDao();
+        deviceDao = AppDatabase.getInstance(appContext).deviceDao();
         messageManager = WqttMessageManager.getInstance(appContext, this);
         deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
             @Override
@@ -66,6 +67,15 @@ public class WqttClientManager {
                 }
             }
         });
+
+        deviceDao.observeSelectedDevice().observeForever(device -> {
+            selectedDevice = device;
+        });
+    }
+
+    @Nullable
+    public static Device getSelectedDevice() {
+        return selectedDevice;
     }
 
     public static WqttClientManager getInstance(Context context) {

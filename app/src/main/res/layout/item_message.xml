@@ -84,17 +84,28 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/iconStatus"
+                android:layout_toStartOf="@id/iconStatusSent"
                 android:text="13adasdadasddasda zxc2" />
 
             <ImageView
-                android:id="@+id/iconStatus"
+                android:id="@+id/iconStatusSent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:visibility="invisible"
                 android:layout_marginHorizontal="8dp"
                 android:src="@drawable/ic_round_done_24" />
+
+            <ImageView
+                android:id="@+id/iconStatusDelivered"
+                android:layout_width="wrap_content"
+                android:visibility="invisible"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="8dp"
+                android:src="@drawable/ic_round_done_all_24" />
 
         </RelativeLayout>
 

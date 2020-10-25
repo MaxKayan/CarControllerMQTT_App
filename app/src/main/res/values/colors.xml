@@ -13,5 +13,7 @@
     <color name="colorBgCenter">#0574B0</color>
     <color name="colorBgEnd">#18384A</color>
 
+    <color name="colorActionIcon">@android:color/white</color>
+
     <color name="black_overlay">#66000000</color>
 </resources>

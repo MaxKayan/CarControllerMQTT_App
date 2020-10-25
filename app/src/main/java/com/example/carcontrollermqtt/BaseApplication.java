@@ -17,6 +17,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate: instantiating application");
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         // Instantiate client manager singleton
         wqttClientManager = WqttClientManager.getInstance(this);

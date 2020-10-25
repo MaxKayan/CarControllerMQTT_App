@@ -96,6 +96,8 @@ public class DevicesViewModel extends AndroidViewModel {
                 .subscribe(() -> {
                     Log.d(TAG, "deleteDevice: Device deleted");
                     message.postValue("Устройство " + device.getUsername() + " удалено");
+                }, throwable -> {
+                    Log.e(TAG, "deleteDevice: Failed to delete the device - ", throwable);
                 });
     }
 
