@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
-import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.transactions.WqttMessageWithDevice;
 import com.example.carcontrollermqtt.service.WqttClientManager;
 import com.example.carcontrollermqtt.service.WqttMessageManager;
@@ -36,9 +35,6 @@ public class HistoryViewModel extends AndroidViewModel {
     }
 
     void publishMessage(String topic, String payload) {
-        Device selectedDevice = WqttClientManager.getSelectedDevice();
-        if (selectedDevice != null) {
-            messageManager.sendMessage(selectedDevice, topic, payload);
-        }
+        messageManager.sendMessage(topic, payload);
     }
 }

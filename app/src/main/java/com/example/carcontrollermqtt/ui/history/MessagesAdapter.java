@@ -1,23 +1,20 @@
 package com.example.carcontrollermqtt.ui.history;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.WqttMessage;
 import com.example.carcontrollermqtt.data.models.transactions.WqttMessageWithDevice;
 import com.example.carcontrollermqtt.databinding.ItemMessageBinding;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, MessagesAdapter.MessageViewHolder> {
     public static final DiffUtil.ItemCallback<WqttMessageWithDevice> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<WqttMessageWithDevice>() {
@@ -30,7 +27,7 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
         public boolean areContentsTheSame(@NonNull WqttMessageWithDevice oldItem, @NonNull WqttMessageWithDevice newItem) {
             boolean same = oldItem.message.isIncoming() == newItem.message.isIncoming() &&
                     oldItem.message.getTopic().equals(newItem.message.getTopic()) &&
-                    oldItem.message.getDeviceId().equals(newItem.message.getDeviceId()) &&
+                    Objects.equals(oldItem.message.getDeviceId(), newItem.message.getDeviceId()) &&
                     oldItem.message.getDateTime().equals(newItem.message.getDateTime()) &&
                     // FIXME status change callback comes very fast so it breaks the slide-in anim
 //                    oldItem.message.getStatus().equals(newItem.message.getStatus()) &&
@@ -40,7 +37,7 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
         }
     };
     private static final String TAG = "MessagesAdapter";
-    private ListChangedCallback changedCallback;
+    private final ListChangedCallback changedCallback;
 
     public MessagesAdapter(ListChangedCallback callback) {
         super(DEVICE_ITEM_CALLBACK);
@@ -67,9 +64,7 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
         WqttMessageWithDevice currentItem = getItem(position);
-        boolean isNew = position == getItemCount() - 1;
-        Log.d(TAG, "onBindViewHolder: " + position + " isNew = " + isNew);
-        holder.bind(currentItem, isNew);
+        holder.bind(currentItem);
     }
 
     public interface ListChangedCallback {
@@ -85,14 +80,13 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
             this.binding = binding;
         }
 
-        void bind(WqttMessageWithDevice transaction, boolean isNew) {
+        void bind(WqttMessageWithDevice transaction) {
             isIncoming = transaction.message.isIncoming();
 
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) binding.cardMessage.getLayoutParams();
             if (isIncoming) {
                 layoutParams.rightMargin = 128;
                 layoutParams.leftMargin = 16;
-//                binding.cardMessage;
                 binding.iconIncoming.setVisibility(View.VISIBLE);
                 binding.iconOutgoing.setVisibility(View.GONE);
             } else {
@@ -104,17 +98,10 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
             }
             binding.cardMessage.setLayoutParams(layoutParams);
 
-            binding.deviceName.setText(transaction.device.getUsername());
+            binding.deviceName.setText(transaction.device != null ? transaction.device.getUsername() : "Удалёно");
             binding.topic.setText(transaction.message.getTopic());
             binding.dateTime.setText(transaction.message.getDateTime().toLocaleString());
             binding.payload.setText(transaction.message.getPayload().trim());
-        }
-
-        private void playAnimation(boolean isNew, boolean isIncoming) {
-            if (!isNew) return;
-
-            Context context = binding.cardMessage.getContext();
-            binding.cardMessage.startAnimation(AnimationUtils.loadAnimation(context, isIncoming ? R.anim.slidein_from_left : R.anim.slidein_from_right));
         }
 
         private void setDeliveryStatus(WqttMessage.MessageStatus status) {
@@ -127,6 +114,5 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
                     break;
             }
         }
-
     }
 }

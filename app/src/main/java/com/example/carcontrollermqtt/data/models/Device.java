@@ -10,6 +10,9 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Device object that has credentials and options for Mqtt Connection
+ */
 @Entity(tableName = "devices",
         indices = {@Index(value = {"username"}, unique = true)})
 public class Device implements Serializable {

@@ -1,5 +1,6 @@
 package com.example.carcontrollermqtt.data.models.transactions;
 
+import androidx.annotation.Nullable;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
@@ -13,5 +14,6 @@ public class WqttMessageWithDevice {
             parentColumn = "deviceId",
             entityColumn = "id"
     )
+    @Nullable
     public Device device;
 }

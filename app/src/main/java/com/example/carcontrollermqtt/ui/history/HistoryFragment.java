@@ -1,6 +1,7 @@
 package com.example.carcontrollermqtt.ui.history;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class HistoryFragment extends Fragment {
 
     private void subscribeObservers(View view) {
         viewModel.observeMessagesWithDevice().observe(getViewLifecycleOwner(), wqttMessageWithDevices -> {
+            Log.d(TAG, "subscribeObservers: got data " + wqttMessageWithDevices);
             adapter.submitList(wqttMessageWithDevices);
         });
     }

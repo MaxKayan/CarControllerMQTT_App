@@ -11,7 +11,6 @@ import com.example.carcontrollermqtt.ui.history.MessagesAdapter.MessageViewHolde
 
 public class MessageItemAnimator extends SimpleItemAnimator {
 
-
     @Override
     public boolean animateRemove(RecyclerView.ViewHolder holder) {
         return false;

@@ -31,7 +31,7 @@ public class WqttMessage {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    public WqttMessage(long id, long deviceId, int mqttMessageId, MessageStatus status, Date dateTime, boolean isIncoming, String topic, String payload) {
+    public WqttMessage(long id, Long deviceId, int mqttMessageId, MessageStatus status, Date dateTime, boolean isIncoming, String topic, String payload) {
         if (id != 0L)
             this.id = id;
         this.deviceId = deviceId;
@@ -53,7 +53,7 @@ public class WqttMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WqttMessage that = (WqttMessage) o;
-        return deviceId == that.deviceId &&
+        return deviceId.equals(that.deviceId) &&
                 mqttMessageId == that.mqttMessageId &&
                 isIncoming == that.isIncoming &&
                 id == that.id &&
@@ -100,13 +100,13 @@ public class WqttMessage {
         return payload;
     }
 
+    public WqttMessage cloneAndUpdate(long id, MessageStatus newStatus) {
+        return new WqttMessage(id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
+    }
+
     public enum MessageStatus {
         PENDING,
         DELIVERED,
         FAILED
-    }
-
-    public WqttMessage cloneAndUpdate(long id, MessageStatus newStatus) {
-        return new WqttMessage(id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
     }
 }
