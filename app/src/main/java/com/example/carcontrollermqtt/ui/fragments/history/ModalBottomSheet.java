@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.history;
+package com.example.carcontrollermqtt.ui.fragments.history;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

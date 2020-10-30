@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.dialogs;
+package com.example.carcontrollermqtt.ui.fragments.dialogs;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;

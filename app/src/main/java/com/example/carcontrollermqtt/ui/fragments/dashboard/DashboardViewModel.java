@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.dashboard;
+package com.example.carcontrollermqtt.ui.fragments.dashboard;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

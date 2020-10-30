@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.devices;
+package com.example.carcontrollermqtt.ui.fragments.devices;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -75,7 +75,6 @@ public class DevicesViewModel extends AndroidViewModel {
                     return item;
                 }).collect(Collectors.toList());
 
-                Log.i(TAG, "DevicesViewModel: putting new event " + newList.get(0).getEvent());
                 devicesViewMerger.setValue(newList);
             }
         };

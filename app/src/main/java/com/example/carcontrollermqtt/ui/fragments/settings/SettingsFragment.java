@@ -1,21 +1,15 @@
-package com.example.carcontrollermqtt.ui.settings;
-
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+package com.example.carcontrollermqtt.ui.fragments.settings;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.carcontrollermqtt.R;
-import com.example.carcontrollermqtt.ui.devices.DevicesViewModel;
 
 public class SettingsFragment extends Fragment {
 

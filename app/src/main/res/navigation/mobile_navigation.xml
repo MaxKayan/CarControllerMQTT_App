@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/navigation_devices"
-        android:name="com.example.carcontrollermqtt.ui.devices.DevicesFragment"
+        android:name="com.example.carcontrollermqtt.ui.fragments.devices.DevicesFragment"
         android:label="@string/title_devices"
         tools:layout="@layout/fragment_devices" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.carcontrollermqtt.ui.dashboard.DashboardFragment"
+        android:name="com.example.carcontrollermqtt.ui.fragments.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_history"
-        android:name="com.example.carcontrollermqtt.ui.history.HistoryFragment"
+        android:name="com.example.carcontrollermqtt.ui.fragments.history.HistoryFragment"
         android:label="@string/title_history"
         tools:layout="@layout/fragment_history" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.example.carcontrollermqtt.ui.settings.SettingsFragment"
+        android:name="com.example.carcontrollermqtt.ui.fragments.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>

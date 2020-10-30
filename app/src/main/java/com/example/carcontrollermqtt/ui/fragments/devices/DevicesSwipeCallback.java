@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.devices;
+package com.example.carcontrollermqtt.ui.fragments.devices;
 
 import android.content.Context;
 import android.graphics.Canvas;

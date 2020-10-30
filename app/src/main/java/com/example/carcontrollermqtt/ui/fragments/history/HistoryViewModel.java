@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.history;
+package com.example.carcontrollermqtt.ui.fragments.history;
 
 import android.annotation.SuppressLint;
 import android.app.Application;

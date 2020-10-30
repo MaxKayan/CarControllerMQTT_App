@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.history;
+package com.example.carcontrollermqtt.ui.fragments.history;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -7,7 +7,7 @@ import android.view.animation.DecelerateInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.example.carcontrollermqtt.ui.history.MessagesAdapter.MessageViewHolder;
+import com.example.carcontrollermqtt.ui.fragments.history.MessagesAdapter.MessageViewHolder;
 
 public class MessageItemAnimator extends SimpleItemAnimator {
 
