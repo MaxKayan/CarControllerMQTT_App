@@ -35,6 +35,7 @@ public class HistoryFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 
+        // Kek
         setupListeners();
         setupRecyclerView();
         subscribeObservers(view);

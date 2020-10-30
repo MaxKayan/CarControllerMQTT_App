@@ -15,7 +15,8 @@ public class LauncherActivity extends AppCompatActivity {
     private static final String TAG = "LauncherActivity";
 
     Runnable proceed = () -> {
-        startActivity(new Intent(this, MainActivity.class));
+//        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, DashboardActivity.class));
         finish();
     };
     private ActivityLauncherBinding binding;
