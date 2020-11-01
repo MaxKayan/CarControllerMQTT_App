@@ -14,6 +14,7 @@ import com.example.carcontrollermqtt.data.models.WqttMessage;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.utils.LiveDataMap;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -95,11 +96,20 @@ public class WqttMessageManager {
         switch (topic) {
             case "dev/info":
                 Log.d(TAG, "receiveMessage: info " + message.toString());
-                deviceInfoMessages.post(device.getUsername(), gson.fromJson(message.toString(), InfoMessage.class));
+                InfoMessage infoMessage = null;
+                try {
+                    infoMessage = gson.fromJson(message.toString(), InfoMessage.class);
+                } catch (JsonSyntaxException exception) {
+                    Log.e(TAG, "receiveMessage: failed to parse", exception);
+                }
+                Log.d(TAG, "receiveMessage: parsed - " + infoMessage);
+                deviceInfoMessages.set(device.getUsername(), infoMessage);
                 break;
+
             case "dev/location":
                 Log.d(TAG, "receiveMessage: location" + message);
                 break;
+
             default:
                 Log.w(TAG, "receiveMessage: unknown topic! - " + topic);
         }

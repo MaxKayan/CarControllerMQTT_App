@@ -247,7 +247,8 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <FrameLayout
-                android:id="@+id/engineStatus"
+                android:visibility="gone"
+                android:id="@+id/engineStatusEnabled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="17dp"
@@ -270,6 +271,32 @@
                     android:src="@drawable/ic_engine" />
 
             </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/engineStatusDisabled"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="17dp"
+                app:layout_constraintLeft_toLeftOf="@id/carSilhouette"
+                app:layout_constraintRight_toRightOf="@id/carSilhouette"
+                app:layout_constraintTop_toTopOf="@id/carSilhouette">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    app:tint="@android:color/darker_gray"
+                    android:src="@drawable/ic_engine_circle" />
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    app:tint="@android:color/darker_gray"
+                    android:src="@drawable/ic_engine" />
+
+            </FrameLayout>
+
 
             <ImageView
                 android:id="@+id/batteryIcon"

@@ -137,8 +137,6 @@ public class WqttClientManager {
                 Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
 //                Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
                 messageManager.receiveMessage(device, topic, message);
-
-
             }
 
             @Override

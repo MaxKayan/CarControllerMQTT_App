@@ -1,22 +1,28 @@
 package com.example.carcontrollermqtt.ui.dashboard;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.carcontrollermqtt.MainActivity;
+import com.example.carcontrollermqtt.MainActivityOld;
 import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
+
+import java.util.Locale;
 
 public class DashboardActivity extends AppCompatActivity {
     private static final String TAG = "DashboardActivity";
@@ -24,6 +30,7 @@ public class DashboardActivity extends AppCompatActivity {
     private ActivityDashboardBinding binding;
 
     private DashboardViewModel viewModel;
+    private Animation scaleLoopAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,35 @@ public class DashboardActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
+        binding.refreshLayout.setOnRefreshListener(() -> {
+            binding.refreshLayout.setRefreshing(false);
+        });
+
+        precacheAnimations();
         subscribeObservers();
+        setupViewListeners();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupViewListeners() {
+        binding.engineStatusDisabled.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.d(TAG, "setupViewListeners: eng down");
+                    return true;
+
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    Log.d(TAG, "setupViewListeners: eng up");
+                    return true;
+                default:
+                    return false;
+            }
+        });
+    }
+
+    private void precacheAnimations() {
+        scaleLoopAnim = AnimationUtils.loadAnimation(this, R.anim.scale_loop);
     }
 
     private void subscribeObservers() {
@@ -54,8 +89,20 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void setupInfoView(InfoMessage message) {
-        binding.voltageValue.setText(String.valueOf(message.getBatteryVoltage()));
-        binding.temperatureValue.setText(String.valueOf(message.getIndoorTemperature()));
+        setEngineStateView(message.isEngineRunning());
+        binding.voltageValue.setText(String.format("%s %s", message.getBatteryVoltage(), "v"));
+        binding.temperatureValue.setText(String.format(Locale.US, "%.1f %s", message.getIndoorTemperature(), getString(R.string.celsius_symbol)));
+    }
+
+    private void setEngineStateView(boolean running) {
+        if (running) {
+            binding.engineStatusEnabled.startAnimation(scaleLoopAnim);
+        } else {
+            binding.engineStatusEnabled.clearAnimation();
+        }
+
+        binding.engineStatusEnabled.setVisibility(running ? View.VISIBLE : View.GONE);
+        binding.engineStatusDisabled.setVisibility(!running ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -76,7 +123,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             if (itemId == R.id.menu_devices) {
                 Log.d(TAG, "showPopup: Devices");
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivityOld.class));
                 return true;
             } else if (itemId == R.id.menu_settings) {
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();

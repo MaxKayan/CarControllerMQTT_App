@@ -8,6 +8,7 @@
       <w>gson</w>
       <w>mqtt</w>
       <w>paho</w>
+      <w>precache</w>
       <w>snackbar</w>
     </words>
   </dictionary>

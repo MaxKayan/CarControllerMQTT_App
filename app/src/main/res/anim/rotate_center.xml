@@ -9,14 +9,14 @@
         android:pivotX="50%"
         android:pivotY="50%"
         android:toXScale="1.0"
-        android:toYScale="1.0"/>
+        android:toYScale="1.0" />
 
     <rotate
         android:duration="1000"
-        android:startOffset="0"
         android:fromDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toDegrees="360"
-        android:repeatCount="-1"/>
+        android:repeatCount="-1"
+        android:startOffset="0"
+        android:toDegrees="360" />
 </set>

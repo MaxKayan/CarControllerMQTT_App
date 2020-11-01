@@ -66,7 +66,7 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         holder.bind(currentItem, editClickCallback);
     }
 
-    static class DeviceViewHolder extends RecyclerView.ViewHolder {
+    public static class DeviceViewHolder extends RecyclerView.ViewHolder {
         private TextView deviceId, deviceName, textStatus;
         private ImageView iconConnected, iconDisconnected, iconError;
         private ProgressBar progressBar;

@@ -80,7 +80,7 @@ public class DevicesViewModel extends AndroidViewModel {
         };
     }
 
-    LiveData<String> observeMessages() {
+    public LiveData<String> observeMessages() {
         return message;
     }
 
@@ -89,7 +89,7 @@ public class DevicesViewModel extends AndroidViewModel {
 //        return deviceDao.observeDevices();
     }
 
-    void deleteDevice(Device device) {
+    public void deleteDevice(Device device) {
         deviceDao.delete(device)
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
@@ -100,7 +100,7 @@ public class DevicesViewModel extends AndroidViewModel {
                 });
     }
 
-    void selectDevice(Device device) {
+    public void selectDevice(Device device) {
         deviceDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .subscribe(devices -> {
@@ -114,7 +114,7 @@ public class DevicesViewModel extends AndroidViewModel {
                 });
     }
 
-    void setEnabledOnDevice(boolean enabled, Device device) {
+    public void setEnabledOnDevice(boolean enabled, Device device) {
         deviceDao.update(device.cloneWithEnabled(enabled))
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
