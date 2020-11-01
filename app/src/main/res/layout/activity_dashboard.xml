@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
-    tools:context=".DashboardActivity">
+    tools:context=".ui.dashboard.DashboardActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -246,24 +246,30 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/engineCircle"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+            <FrameLayout
+                android:id="@+id/engineStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="17dp"
-                android:src="@drawable/ic_engine_circle"
                 app:layout_constraintLeft_toLeftOf="@id/carSilhouette"
                 app:layout_constraintRight_toRightOf="@id/carSilhouette"
-                app:layout_constraintTop_toTopOf="@id/carSilhouette" />
+                app:layout_constraintTop_toTopOf="@id/carSilhouette">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_engine"
-                app:layout_constraintBottom_toBottomOf="@id/engineCircle"
-                app:layout_constraintLeft_toLeftOf="@id/engineCircle"
-                app:layout_constraintRight_toRightOf="@id/engineCircle"
-                app:layout_constraintTop_toTopOf="@id/engineCircle" />
+                <ImageView
+                    android:id="@+id/engineCircle"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_engine_circle" />
+
+                <ImageView
+                    android:id="@+id/engineIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_engine" />
+
+            </FrameLayout>
 
             <ImageView
                 android:id="@+id/batteryIcon"
@@ -277,6 +283,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/voltageValue"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -299,6 +306,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/temperatureValue"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

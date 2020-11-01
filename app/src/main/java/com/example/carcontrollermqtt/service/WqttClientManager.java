@@ -68,6 +68,7 @@ public class WqttClientManager {
             }
         });
 
+        // Observe selected device from the Room database for the whole app lifetime, and cache it for the easy access.
         deviceDao.observeSelectedDevice().observeForever(device -> {
             selectedDevice = device;
         });
@@ -135,8 +136,9 @@ public class WqttClientManager {
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.i(TAG, "messageArrived: " + device + " - " + topic + " - " + message.toString());
 //                Toast.makeText(context, topic + " - " + message.toString(), Toast.LENGTH_LONG).show();
-
                 messageManager.receiveMessage(device, topic, message);
+
+
             }
 
             @Override

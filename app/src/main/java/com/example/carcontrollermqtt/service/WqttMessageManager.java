@@ -4,11 +4,16 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.WqttClient;
 import com.example.carcontrollermqtt.data.models.WqttMessage;
+import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
+import com.example.carcontrollermqtt.utils.LiveDataMap;
+import com.google.gson.Gson;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -49,14 +54,19 @@ public class WqttMessageManager {
     private final AppDatabase database;
     private final WqttMessageDao messageDao;
 
+    private final Gson gson;
+
     // Client manager to get MqttClient based on device name
     private final WqttClientManager clientManager;
 
+    private final LiveDataMap<String, InfoMessage> deviceInfoMessages = new LiveDataMap<>();
+
     // Main private constructor to be called from public static function
     private WqttMessageManager(Context context, WqttClientManager clientManager) {
-        database = AppDatabase.getInstance(context);
-        messageDao = database.messageDao();
+        this.database = AppDatabase.getInstance(context);
+        this.messageDao = database.messageDao();
         this.clientManager = clientManager;
+        this.gson = GsonProvider.getGsonInstance();
     }
 
     /**
@@ -81,6 +91,18 @@ public class WqttMessageManager {
         writeToDb(
                 messageDao.insert(WqttMessage.newInstance(device.getId(), message.getId(), new Date(), true, topic, message.toString()))
         );
+
+        switch (topic) {
+            case "dev/info":
+                Log.d(TAG, "receiveMessage: info " + message.toString());
+                deviceInfoMessages.post(device.getUsername(), gson.fromJson(message.toString(), InfoMessage.class));
+                break;
+            case "dev/location":
+                Log.d(TAG, "receiveMessage: location" + message);
+                break;
+            default:
+                Log.w(TAG, "receiveMessage: unknown topic! - " + topic);
+        }
     }
 
 
@@ -155,5 +177,13 @@ public class WqttMessageManager {
      */
     private void writeToDb(Completable task) {
         task.subscribeOn(Schedulers.io()).subscribe(writeToDbObserver);
+    }
+
+    public LiveData<InfoMessage> observeDeviceInfo(Device device) {
+        return observeDeviceInfo(device.getUsername());
+    }
+
+    public LiveData<InfoMessage> observeDeviceInfo(String deviceUsername) {
+        return deviceInfoMessages.observe(deviceUsername);
     }
 }

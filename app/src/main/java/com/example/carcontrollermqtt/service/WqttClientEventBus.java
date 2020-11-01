@@ -14,7 +14,7 @@ import java.util.Map;
 public final class WqttClientEventBus {
     private static final String TAG = "WqttClientEventBus";
     private final Map<String, MutableLiveData<DeviceEvent>> bus;
-    private final Map<String, DeviceEvent> cachedEvents = new HashMap<>();
+    private final Map<String, DeviceEvent> lastDeviceStatus = new HashMap<>();
 
     private WqttClientEventBus() {
         bus = new HashMap<>();
@@ -30,8 +30,8 @@ public final class WqttClientEventBus {
             // TODO: Should probably switch to using RxJava bus instead of LiveData
             liveData.observeForever(deviceEvent -> {
                 if (deviceEvent == null) return;
-                cachedEvents.put(deviceEvent.getDevice().getUsername(), deviceEvent);
-                Log.d(TAG, "getChannel: cached event - " + cachedEvents.get(deviceEvent.getDevice().getUsername()));
+                lastDeviceStatus.put(deviceEvent.getDevice().getUsername(), deviceEvent);
+                Log.d(TAG, "getChannel: cached event - " + lastDeviceStatus.get(deviceEvent.getDevice().getUsername()));
             });
 
             bus.put(deviceName, liveData);
@@ -41,7 +41,7 @@ public final class WqttClientEventBus {
 
     @Nullable
     public DeviceEvent getLastEventForDevice(Device device) {
-        return cachedEvents.get(device.getUsername());
+        return lastDeviceStatus.get(device.getUsername());
     }
 
     private static class SingletonHolder {

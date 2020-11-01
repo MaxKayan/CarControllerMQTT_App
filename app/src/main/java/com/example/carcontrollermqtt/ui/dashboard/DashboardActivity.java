@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt;
+package com.example.carcontrollermqtt.ui.dashboard;
 
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -10,14 +10,52 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.carcontrollermqtt.MainActivity;
+import com.example.carcontrollermqtt.R;
+import com.example.carcontrollermqtt.data.models.Device;
+import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
+import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
 
 public class DashboardActivity extends AppCompatActivity {
     private static final String TAG = "DashboardActivity";
 
+    private ActivityDashboardBinding binding;
+
+    private DashboardViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+        binding = ActivityDashboardBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+
+        subscribeObservers();
+    }
+
+    private void subscribeObservers() {
+        viewModel.observeSelectedDevice().observe(this, device -> {
+            Log.d(TAG, "subscribeObservers: current device " + device);
+            setupDeviceView(device);
+
+            viewModel.observeInfo(this, device).observe(this, infoMessage -> {
+                Log.d(TAG, "subscribeObservers: new info - " + infoMessage.toString());
+                setupInfoView(infoMessage);
+            });
+        });
+    }
+
+    private void setupDeviceView(Device device) {
+        binding.label.setText(device.getLabel());
+        binding.username.setText(device.getUsername());
+    }
+
+    private void setupInfoView(InfoMessage message) {
+        binding.voltageValue.setText(String.valueOf(message.getBatteryVoltage()));
+        binding.temperatureValue.setText(String.valueOf(message.getIndoorTemperature()));
     }
 
     @Override

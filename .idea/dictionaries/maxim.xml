@@ -4,6 +4,8 @@
       <w>bottomsheet</w>
       <w>carcontrollermqtt</w>
       <w>desugaring</w>
+      <w>flowable</w>
+      <w>gson</w>
       <w>mqtt</w>
       <w>paho</w>
       <w>snackbar</w>

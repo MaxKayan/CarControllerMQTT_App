@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.carcontrollermqtt.databinding.ActivityLauncherBinding;
+import com.example.carcontrollermqtt.ui.dashboard.DashboardActivity;
 
 public class LauncherActivity extends AppCompatActivity {
     private static final String TAG = "LauncherActivity";
