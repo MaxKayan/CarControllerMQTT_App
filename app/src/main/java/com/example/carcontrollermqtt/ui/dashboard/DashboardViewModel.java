@@ -32,7 +32,7 @@ public class DashboardViewModel extends AndroidViewModel {
         this.messageManager = clientManager.getMessageManager();
     }
 
-    LiveData<InfoMessage> observeInfo(LifecycleOwner owner, Device device) {
+    public LiveData<InfoMessage> observeInfo(LifecycleOwner owner, Device device) {
         if (currentDevice != null) {
             messageManager.observeDeviceInfo(currentDevice).removeObservers(owner);
         }
@@ -40,7 +40,7 @@ public class DashboardViewModel extends AndroidViewModel {
         return messageManager.observeDeviceInfo(device);
     }
 
-    LiveData<Device> observeSelectedDevice() {
+    public LiveData<Device> observeSelectedDevice() {
         return deviceDao.observeSelectedDevice();
     }
 

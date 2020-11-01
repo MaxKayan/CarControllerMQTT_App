@@ -9,22 +9,23 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-<!--    <TextView-->
-<!--        android:id="@+id/fullscreen_content"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:gravity="center"-->
-<!--        android:keepScreenOn="true"-->
-<!--        android:text="@string/dummy_content"-->
-<!--        android:textColor="#33b5e5"-->
-<!--        android:textSize="50sp"-->
-<!--        android:textStyle="bold" />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/fullscreen_content"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:gravity="center"-->
+    <!--        android:keepScreenOn="true"-->
+    <!--        android:text="@string/dummy_content"-->
+    <!--        android:textColor="#33b5e5"-->
+    <!--        android:textSize="50sp"-->
+    <!--        android:textStyle="bold" />-->
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="105dp"
         android:layout_height="105dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_baseline_directions_car_24"
-        android:contentDescription="Logo" />
+        android:contentDescription="Logo"
+        android:src="@drawable/ic_baseline_directions_car_24" />
+
 </FrameLayout>

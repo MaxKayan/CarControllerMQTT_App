@@ -12,6 +12,14 @@
         <item name="android:colorBackground">#121212</item>
 
         <item name="snackbarStyle">@style/Widget.Design.Snackbar</item>
+
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
     </style>
 
     <style name="LauncherTheme" parent="Theme.MaterialComponents.NoActionBar">

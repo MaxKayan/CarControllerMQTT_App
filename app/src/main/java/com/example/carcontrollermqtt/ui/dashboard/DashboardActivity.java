@@ -1,7 +1,6 @@
 package com.example.carcontrollermqtt.ui.dashboard;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.carcontrollermqtt.MainActivityOld;
 import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
@@ -123,7 +121,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             if (itemId == R.id.menu_devices) {
                 Log.d(TAG, "showPopup: Devices");
-                startActivity(new Intent(this, MainActivityOld.class));
+//                startActivity(new Intent(this, MainActivityOld.class));
                 return true;
             } else if (itemId == R.id.menu_settings) {
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
