@@ -35,28 +35,16 @@ public class MainActivity extends AppCompatActivity {
 //        NavigationUI.setupWithNavController(binding.navView, navController);
 
         binding.navView.setNavigationItemSelectedListener(item -> {
-//            int id = item.getItemId();
-//            Fragment fragment = null;
-//            Class<? extends Fragment> fragmentClass;
-//            if (id == R.id.navigation_devices) {
-//                fragmentClass = DevicesFragment.class;
-//            } else if (id == R.id.navigation_history) {
-//                fragmentClass = HistoryFragment.class;
-//            } else if (id == R.id.navigation_dashboard) {
-//                fragmentClass = DashboardFragment.class;
-//            } else return false;
-//
-//            try {
-//                fragment = fragmentClass.newInstance();
-//            } catch (IllegalAccessException | InstantiationException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-
             NavController navController = ((NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)).getNavController();
-            navController.navigate(R.id.action_navigation_dashboard_to_navigation_devices);
-//            FragmentManager fragmentManager = getSupportFragmentManager();
-//            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).commit();
+            int id = item.getItemId();
+            if (id == R.id.navigation_devices) {
+                navController.navigate(R.id.navigation_devices);
+            } else if (id == R.id.navigation_history) {
+                navController.navigate(R.id.navigation_history);
+            } else if (id == R.id.navigation_dashboard) {
+                navController.navigate(R.id.navigation_dashboard);
+            } else return false;
+
             closeDrawer();
             return true;
         });
