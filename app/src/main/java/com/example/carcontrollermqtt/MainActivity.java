@@ -7,6 +7,7 @@ import android.view.Window;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -18,10 +19,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     MainViewModel viewModel;
+    NavOptions navOptions = new NavOptions.Builder()
+            .setLaunchSingleTop(true)  // Used to prevent multiple copies of the same destination
+            .setEnterAnim(R.anim.nav_default_enter_anim)
+            .setExitAnim(R.anim.nav_default_exit_anim)
+            .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
+            .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
+            .build();
     private ActivityMainBinding binding;
-
     private AppBarConfiguration appBarConfiguration;
-
     private NavController navController;
 
     @Override
@@ -46,16 +52,24 @@ public class MainActivity extends AppCompatActivity {
         binding.navView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.navigation_devices) {
-                navController.navigate(R.id.navigation_devices);
+                navigateTo(R.id.navigation_devices);
             } else if (id == R.id.navigation_history) {
-                navController.navigate(R.id.navigation_history);
+                navigateTo(R.id.navigation_history);
             } else if (id == R.id.navigation_dashboard) {
-                navController.navigate(R.id.navigation_dashboard);
+                navigateTo(R.id.navigation_dashboard);
+            } else if (id == R.id.navigation_settings) {
+                navigateTo(R.id.navigation_settings);
             } else return false;
 
             closeDrawer();
             return true;
         });
+    }
+
+    private void navigateTo(final int navigation) {
+        if (navController.getCurrentDestination().getId() == navigation) return;
+
+        navController.navigate(navigation, null, navOptions);
     }
 
     public void openDrawer() {

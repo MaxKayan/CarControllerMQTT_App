@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -25,12 +27,13 @@ public class DialogDeviceEdit extends DialogFragment {
     private static final String TAG = "DialogDeviceEdit";
     private static final String DEVICE_SERIALIZED = "DeviceSerialized";
 
-
     DialogDeviceEditBinding binding;
 
     DeviceDao deviceDao;
 
     private Device editedDevice;
+
+    private ActivityResultLauncher<Void> getPicture;
 
     public static DialogDeviceEdit newInstance() {
         return new DialogDeviceEdit();
@@ -47,6 +50,10 @@ public class DialogDeviceEdit extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getPicture = registerForActivityResult(new ActivityResultContracts.TakePicturePreview(), result -> {
+            Log.d(TAG, "setupListeners: picture " + result + " - ");
+            binding.deviceAvatar.setImageBitmap(result);
+        });
         binding = DialogDeviceEditBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -58,6 +65,8 @@ public class DialogDeviceEdit extends DialogFragment {
         deviceDao = AppDatabase.getInstance(view.getContext()).deviceDao();
         unpackBundleArgs(getArguments());
         setupListeners();
+
+
     }
 
     private void unpackBundleArgs(Bundle args) {
@@ -75,6 +84,9 @@ public class DialogDeviceEdit extends DialogFragment {
 
     private void setupListeners() {
         binding.btnConfirm.setOnClickListener(v -> saveEditedDevice());
+        binding.btnTakePicture.setOnClickListener(v -> {
+            getPicture.launch(null);
+        });
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

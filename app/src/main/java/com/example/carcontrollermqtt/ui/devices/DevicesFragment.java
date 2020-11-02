@@ -19,7 +19,6 @@ import com.example.carcontrollermqtt.ToolbarFragment;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.FragmentDevicesBinding;
 import com.example.carcontrollermqtt.ui.dialogs.DialogDeviceEdit;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 
 public class DevicesFragment extends ToolbarFragment {
@@ -30,6 +29,7 @@ public class DevicesFragment extends ToolbarFragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        viewModel = new ViewModelProvider(this).get(DevicesViewModel.class);
         binding = FragmentDevicesBinding.inflate(getLayoutInflater(), container, false);
         return binding.getRoot();
     }
@@ -39,7 +39,6 @@ public class DevicesFragment extends ToolbarFragment {
         super.onViewCreated(view, savedInstanceState);
         toolbar.setTitle("Устройства");
 
-        viewModel = new ViewModelProvider(this).get(DevicesViewModel.class);
         setupListeners();
         setupRecyclerView();
         subscribeObservers(view);

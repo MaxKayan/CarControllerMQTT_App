@@ -22,6 +22,30 @@
 
     <include layout="@layout/hr" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|start"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/deviceAvatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/avatar_placeholder" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTakePicture"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="12dp"
+            android:text="Назначить фото" />
+
+    </LinearLayout>
+
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/inputLabelLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -32,9 +56,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputLabel"
-            android:inputType="text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,10 +72,10 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputMAC"
-            android:digits="@string/device_name_digits"
-            android:inputType="textFilter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:digits="@string/device_name_digits"
+            android:inputType="textFilter" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,10 +89,10 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputName"
-            android:digits="@string/device_name_digits"
-            android:inputType="textFilter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:digits="@string/device_name_digits"
+            android:inputType="textFilter" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -106,10 +130,10 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputKeepAlive"
-                android:text="60"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"/>
+                android:inputType="number"
+                android:text="60" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,8 +149,8 @@
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="7dp"
             android:layout_marginBottom="2dp"
-            android:text="Записать"
-            android:padding="6dp"/>
+            android:padding="6dp"
+            android:text="Записать" />
 
     </RelativeLayout>
 

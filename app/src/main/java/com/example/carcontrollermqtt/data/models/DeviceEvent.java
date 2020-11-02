@@ -2,9 +2,10 @@ package com.example.carcontrollermqtt.data.models;
 
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class DeviceEvent {
+public class DeviceEvent implements Serializable {
     private final DeviceEventStatus status;
     private final Device device;
     @Nullable
