@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.fragments.devices;
+package com.example.carcontrollermqtt.ui.devices;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.FragmentDevicesBinding;
-import com.example.carcontrollermqtt.ui.fragments.dialogs.DialogDeviceEdit;
+import com.example.carcontrollermqtt.ui.dialogs.DialogDeviceEdit;
 import com.google.android.material.snackbar.Snackbar;
 
 public class DevicesFragment extends Fragment {

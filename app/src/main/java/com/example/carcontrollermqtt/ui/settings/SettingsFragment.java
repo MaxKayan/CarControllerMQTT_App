@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.fragments.settings;
+package com.example.carcontrollermqtt.ui.settings;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

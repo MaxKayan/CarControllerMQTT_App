@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.fragments.settings;
+package com.example.carcontrollermqtt.ui.settings;
 
 import androidx.lifecycle.ViewModel;
 

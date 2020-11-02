@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.fragments.devices;
+package com.example.carcontrollermqtt.ui.devices;
 
 import android.util.Log;
 import android.view.LayoutInflater;

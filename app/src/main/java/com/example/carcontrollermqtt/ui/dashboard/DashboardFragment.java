@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.fragments.dashboard;
+package com.example.carcontrollermqtt.ui.dashboard;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -22,7 +22,6 @@ import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
-import com.example.carcontrollermqtt.ui.dashboard.DashboardViewModel;
 
 import java.util.Locale;
 

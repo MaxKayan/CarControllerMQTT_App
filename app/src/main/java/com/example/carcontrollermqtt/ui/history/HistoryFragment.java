@@ -1,4 +1,4 @@
-package com.example.carcontrollermqtt.ui.fragments.history;
+package com.example.carcontrollermqtt.ui.history;
 
 import android.os.Bundle;
 import android.util.Log;
