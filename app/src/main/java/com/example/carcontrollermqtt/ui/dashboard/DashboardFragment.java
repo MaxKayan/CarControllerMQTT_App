@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,14 +20,13 @@ import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Locale;
 
 public class DashboardFragment extends Fragment {
     private static final String TAG = "DashboardFragment";
-
     private ActivityDashboardBinding binding;
-
     private DashboardViewModel viewModel;
     private Animation scaleLoopAnim;
 
@@ -45,6 +42,7 @@ public class DashboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+
 
         binding.refreshLayout.setOnRefreshListener(() -> {
             binding.refreshLayout.setRefreshing(false);
@@ -84,6 +82,8 @@ public class DashboardFragment extends Fragment {
     private void subscribeObservers() {
         viewModel.observeSelectedDevice().observe(getViewLifecycleOwner(), device -> {
             Log.d(TAG, "subscribeObservers: current device " + device);
+            if (device == null) return;
+
             setupDeviceView(device);
 
             viewModel.observeInfo(this, device).observe(getViewLifecycleOwner(), infoMessage -> {
@@ -113,33 +113,5 @@ public class DashboardFragment extends Fragment {
 
         binding.engineStatusEnabled.setVisibility(running ? View.VISIBLE : View.GONE);
         binding.engineStatusDisabled.setVisibility(!running ? View.VISIBLE : View.GONE);
-    }
-
-
-
-    public void showPopup(View view) {
-        Log.d(TAG, "showPopup: called");
-        PopupMenu popupMenu = new PopupMenu(getContext(), view);
-        popupMenu.inflate(R.menu.options_main);
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            Log.d(TAG, "showPopup: clicked on " + item.getItemId());
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.menu_devices) {
-                Log.d(TAG, "showPopup: Devices");
-//                startActivity(new Intent(this, MainActivityOld.class));
-                return true;
-            } else if (itemId == R.id.menu_settings) {
-                Toast.makeText(getContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            return false;
-        });
-
-        popupMenu.setOnDismissListener(menu -> {
-            Log.d(TAG, "showPopup: Dismissed");
-        });
-        popupMenu.show();
     }
 }

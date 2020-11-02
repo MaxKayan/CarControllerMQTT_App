@@ -9,19 +9,20 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.carcontrollermqtt.ToolbarFragment;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.FragmentDevicesBinding;
 import com.example.carcontrollermqtt.ui.dialogs.DialogDeviceEdit;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 
-public class DevicesFragment extends Fragment {
+public class DevicesFragment extends ToolbarFragment {
     private static final String TAG = "DevicesFragment";
     FragmentDevicesBinding binding;
     DevicesAdapter adapter;
@@ -36,9 +37,9 @@ public class DevicesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        toolbar.setTitle("Устройства");
 
         viewModel = new ViewModelProvider(this).get(DevicesViewModel.class);
-
         setupListeners();
         setupRecyclerView();
         subscribeObservers(view);

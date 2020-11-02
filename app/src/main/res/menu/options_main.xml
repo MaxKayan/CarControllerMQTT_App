@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_devices"
-        android:title="Устройства"/>
-
-    <item android:id="@+id/menu_settings"
-        android:title="Настройки"/>
+    <item android:id="@+id/menu_nav"
+        app:showAsAction="ifRoom"
+        android:iconTint="@color/primary_100"
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title="Меню"/>
 </menu>

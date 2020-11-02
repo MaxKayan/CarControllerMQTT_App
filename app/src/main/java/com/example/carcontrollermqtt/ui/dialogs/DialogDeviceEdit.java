@@ -66,6 +66,7 @@ public class DialogDeviceEdit extends DialogFragment {
             if (editedDevice == null) return;
 
             binding.textHeader.setText("Редактировать устройство");
+            binding.inputLabel.setText(editedDevice.getLabel());
             binding.inputName.setText(editedDevice.getUsername());
             binding.inputPassword.setText(editedDevice.getPassword());
             binding.inputKeepAlive.setText(String.valueOf(editedDevice.getKeepAlive()));
@@ -92,13 +93,13 @@ public class DialogDeviceEdit extends DialogFragment {
                     })
                     .subscribe((device, throwable) -> {
                         if (throwable instanceof EmptyResultSetException) {
-                            writeToDB(getResult(input.username, input.password));
+                            writeToDB(getResult(input.label, input.username, input.password));
                             dismiss();
                         }
                     });
 
         } else {
-            writeToDB(getResult(input.username, input.password));
+            writeToDB(getResult(input.label, input.username, input.password));
             dismiss();
         }
     }
@@ -109,18 +110,20 @@ public class DialogDeviceEdit extends DialogFragment {
 
     @Nullable
     private DeviceOptions getValidInput() {
+        String label = String.valueOf(binding.inputLabel.getText());
         String username = String.valueOf(binding.inputName.getText());
         String password = String.valueOf(binding.inputPassword.getText());
-        if (!validateInput(username, password)) return null;
+        if (!validateInput(label, username, password)) return null;
 
-        return new DeviceOptions(username, password);
+        return new DeviceOptions(label, username, password);
     }
 
-    private boolean validateInput(String username, String password) {
-        boolean nameNotEmpty = layoutTextNotEmpty(binding.inputNameLayout, username, "Укажите имя устройства");
+    private boolean validateInput(String label, String username, String password) {
+        boolean labelNotEmpty = layoutTextNotEmpty(binding.inputLabelLayout, label, "Укажите название для авто");
+        boolean nameNotEmpty = layoutTextNotEmpty(binding.inputNameLayout, username, "Укажите логин устройства");
         boolean passNotEmpty = layoutTextNotEmpty(binding.inputPasswordLayout, password, "Укажите пароль");
 
-        return nameNotEmpty && passNotEmpty;
+        return labelNotEmpty && nameNotEmpty && passNotEmpty;
     }
 
     private boolean layoutTextNotEmpty(TextInputLayout layout, String value, String errorText) {
@@ -133,15 +136,15 @@ public class DialogDeviceEdit extends DialogFragment {
         }
     }
 
-    private Device getResult(String name, String password) {
+    private Device getResult(String label, String name, String password) {
         Device result;
         String keepAlive = binding.inputKeepAlive.getText().toString();
         int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
         if (editedDevice == null) {
-            result = new Device(0L, true, false, null, null, name, password, keepAliveValue);
+            result = new Device(0L, true, false, label, null, name, password, keepAliveValue);
         } else {
-            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), null, null, name, password, keepAliveValue);
+            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), label, null, name, password, keepAliveValue);
         }
 
         return result;
@@ -167,10 +170,12 @@ public class DialogDeviceEdit extends DialogFragment {
     }
 
     private static class DeviceOptions {
+        String label;
         String username;
         String password;
 
-        public DeviceOptions(String username, String password) {
+        public DeviceOptions(String label, String username, String password) {
+            this.label = label;
             this.username = username;
             this.password = password;
         }

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">CarControllerMQTT</string>
-    <string name="title_devices">Устройства</string>
+    <string name="title_devices">Гараж</string>
     <string name="title_dashboard">Управление</string>
     <string name="title_history">История</string>
     <string name="title_settings">Настройки</string>
@@ -15,4 +15,11 @@
     <string name="header_background">Header background</string>
     <string name="car_avatar">Car avatar</string>
     <string name="celsius_symbol">°C</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android MQTT</string>
+    <string name="nav_header_subtitle">maxim.kayander1@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 </resources>

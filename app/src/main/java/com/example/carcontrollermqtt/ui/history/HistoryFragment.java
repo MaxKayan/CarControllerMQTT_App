@@ -12,9 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.carcontrollermqtt.ToolbarFragment;
 import com.example.carcontrollermqtt.databinding.FragmentHistoryBinding;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends ToolbarFragment {
     private static final String TAG = "HistoryFragment";
 
     private FragmentHistoryBinding binding;
@@ -32,6 +33,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        toolbar.setTitle("История");
 
         viewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 

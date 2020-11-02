@@ -26,6 +26,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        dataBinding true
     }
 
     compileOptions {
@@ -82,4 +83,10 @@ dependencies {
 
     // Google GSON - JSON parser
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    def latestMaterialDrawerRelease = '8.1.8'
+    // Material Drawer
+    implementation "com.mikepenz:materialdrawer:${latestMaterialDrawerRelease}"
+    // Add for NavController support
+    implementation "com.mikepenz:materialdrawer-nav:${latestMaterialDrawerRelease}"
 }

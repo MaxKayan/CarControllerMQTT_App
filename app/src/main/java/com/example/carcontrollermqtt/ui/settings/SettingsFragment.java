@@ -6,12 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.carcontrollermqtt.R;
+import com.example.carcontrollermqtt.ToolbarFragment;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends ToolbarFragment {
 
     private SettingsViewModel settingsViewModel;
 
