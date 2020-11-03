@@ -1,7 +1,9 @@
 package com.example.carcontrollermqtt.ui.dialogs;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +16,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.room.EmptyResultSetException;
 
+import com.bumptech.glide.Glide;
+import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.databinding.DialogDeviceEditBinding;
+import com.example.carcontrollermqtt.utils.FileManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.io.IOException;
+import java.util.Random;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -31,9 +40,12 @@ public class DialogDeviceEdit extends DialogFragment {
 
     DeviceDao deviceDao;
 
+    private String avatarImagePath;
+
     private Device editedDevice;
 
-    private ActivityResultLauncher<Void> getPicture;
+    private ActivityResultLauncher<Void> takePicture;
+    private ActivityResultLauncher<String> getPicture;
 
     public static DialogDeviceEdit newInstance() {
         return new DialogDeviceEdit();
@@ -50,11 +62,33 @@ public class DialogDeviceEdit extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getPicture = registerForActivityResult(new ActivityResultContracts.TakePicturePreview(), result -> {
-            Log.d(TAG, "setupListeners: picture " + result + " - ");
-            binding.deviceAvatar.setImageBitmap(result);
-        });
         binding = DialogDeviceEditBinding.inflate(inflater, container, false);
+
+        takePicture = registerForActivityResult(new ActivityResultContracts.TakePicturePreview(), result -> {
+            Log.d(TAG, "setupListeners: picture " + result + " - ");
+            if (result == null) return;
+
+            binding.deviceAvatar.setImageBitmap(result);
+            avatarImagePath = FileManager.writeImage(getContext(), "car_avatar_" + new Random().nextDouble(), result).toString();
+        });
+
+        getPicture = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            Bitmap bitmap;
+            if (result != null) {
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(binding.getRoot().getContext().getContentResolver(), result);
+                    Log.d(TAG, "onCreateView: " + bitmap.toString());
+
+                    binding.deviceAvatar.setImageBitmap(bitmap);
+                    avatarImagePath = FileManager.writeImage(getContext(), "car_avatar_" + new Random().nextDouble(), bitmap).toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e(TAG, "onCreateView: received null result!");
+            }
+        });
+
         return binding.getRoot();
     }
 
@@ -64,9 +98,7 @@ public class DialogDeviceEdit extends DialogFragment {
 
         deviceDao = AppDatabase.getInstance(view.getContext()).deviceDao();
         unpackBundleArgs(getArguments());
-        setupListeners();
-
-
+        setupListeners(view);
     }
 
     private void unpackBundleArgs(Bundle args) {
@@ -74,18 +106,30 @@ public class DialogDeviceEdit extends DialogFragment {
             editedDevice = (Device) args.getSerializable(DEVICE_SERIALIZED);
             if (editedDevice == null) return;
 
+            Glide.with(this)
+                    .load(editedDevice.getAvatarUri().getPath())
+                    .into(binding.deviceAvatar);
+
             binding.textHeader.setText("Редактировать устройство");
             binding.inputLabel.setText(editedDevice.getLabel());
+            avatarImagePath = editedDevice.getAvatarUriString();
             binding.inputName.setText(editedDevice.getUsername());
             binding.inputPassword.setText(editedDevice.getPassword());
             binding.inputKeepAlive.setText(String.valueOf(editedDevice.getKeepAlive()));
         }
     }
 
-    private void setupListeners() {
+    private void setupListeners(View view) {
         binding.btnConfirm.setOnClickListener(v -> saveEditedDevice());
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(view.getContext());
+        dialog.setTitle("Назначить фото")
+                .setIcon(R.drawable.ic_baseline_add_photo_alternate_24)
+                .setMessage("Выберите источник")
+                .setPositiveButton("Камера", (dialogInterface, i) -> takePicture.launch(null))
+                .setNeutralButton("Галерея", (dialogInterface, i) -> getPicture.launch("image/*"));
+//                .setNegativeButton("Отмена", (dialogInterface, i) -> { });
         binding.btnTakePicture.setOnClickListener(v -> {
-            getPicture.launch(null);
+            dialog.show();
         });
     }
 
@@ -105,13 +149,13 @@ public class DialogDeviceEdit extends DialogFragment {
                     })
                     .subscribe((device, throwable) -> {
                         if (throwable instanceof EmptyResultSetException) {
-                            writeToDB(getResult(input.label, input.username, input.password));
+                            writeToDB(getResult(input));
                             dismiss();
                         }
                     });
 
         } else {
-            writeToDB(getResult(input.label, input.username, input.password));
+            writeToDB(getResult(input));
             dismiss();
         }
     }
@@ -125,9 +169,10 @@ public class DialogDeviceEdit extends DialogFragment {
         String label = String.valueOf(binding.inputLabel.getText());
         String username = String.valueOf(binding.inputName.getText());
         String password = String.valueOf(binding.inputPassword.getText());
+
         if (!validateInput(label, username, password)) return null;
 
-        return new DeviceOptions(label, username, password);
+        return new DeviceOptions(label, avatarImagePath, username, password);
     }
 
     private boolean validateInput(String label, String username, String password) {
@@ -148,15 +193,15 @@ public class DialogDeviceEdit extends DialogFragment {
         }
     }
 
-    private Device getResult(String label, String name, String password) {
+    private Device getResult(DeviceOptions options) {
         Device result;
         String keepAlive = binding.inputKeepAlive.getText().toString();
         int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
         if (editedDevice == null) {
-            result = new Device(0L, true, false, label, null, name, password, keepAliveValue);
+            result = new Device(0L, true, false, options.label, options.avatar, null, options.username, options.password, keepAliveValue);
         } else {
-            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), label, null, name, password, keepAliveValue);
+            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), options.label, options.avatar, null, options.username, options.password, keepAliveValue);
         }
 
         return result;
@@ -183,13 +228,15 @@ public class DialogDeviceEdit extends DialogFragment {
 
     private static class DeviceOptions {
         String label;
+        String avatar;
         String username;
         String password;
 
-        public DeviceOptions(String label, String username, String password) {
+        public DeviceOptions(String label, String avatar, String username, String password) {
             this.label = label;
             this.username = username;
             this.password = password;
+            this.avatar = avatar;
         }
     }
 

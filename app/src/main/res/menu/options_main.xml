@@ -5,6 +5,6 @@
     <item android:id="@+id/menu_nav"
         app:showAsAction="ifRoom"
         android:iconTint="@color/primary_100"
-        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:icon="@drawable/ic_baseline_menu_open_24"
         android:title="Меню"/>
 </menu>

@@ -15,12 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.carcontrollermqtt.MainActivity;
 import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
-import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Locale;
 
@@ -95,7 +95,13 @@ public class DashboardFragment extends Fragment {
 
     private void setupDeviceView(Device device) {
         binding.label.setText(device.getLabel());
+//        binding.avatar.setImageBitmap(device.getAvatarBitmap());
         binding.username.setText(device.getUsername());
+
+        Glide.with(this)
+                .asBitmap()
+                .load(device.getAvatarUri().getPath())
+                .into(binding.avatar);
     }
 
     private void setupInfoView(InfoMessage message) {
