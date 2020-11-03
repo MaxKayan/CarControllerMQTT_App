@@ -40,6 +40,11 @@ public class DashboardViewModel extends AndroidViewModel {
         return messageManager.observeDeviceInfo(device);
     }
 
+    public void refreshDeviceData(Device device) {
+        device.requestInfo(messageManager);
+//        device.requestLocation(messageManager);
+    }
+
     public LiveData<Device> observeSelectedDevice() {
         return deviceDao.observeSelectedDevice();
     }

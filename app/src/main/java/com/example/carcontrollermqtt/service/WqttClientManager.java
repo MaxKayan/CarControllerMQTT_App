@@ -34,8 +34,6 @@ public class WqttClientManager {
 
     // TODO: A way to avoid passing context to this singleton?
     private final Context context;
-    //    private AppDatabase database;
-//    private DeviceDao deviceDao;
     private final DeviceDao deviceDao;
 
     private final WqttClientDiffUtil deviceListManager;
@@ -156,6 +154,7 @@ public class WqttClientManager {
                         try {
                             client.subscribe("#", 0);
                             eventChannel.postValue(DeviceEvent.connected(device, null));
+                            device.requestInfo(messageManager);
                         } catch (MqttException e) {
                             e.printStackTrace();
                         }
@@ -173,10 +172,6 @@ public class WqttClientManager {
         });
         handleClientConnection(wqtt);
         return wqtt;
-    }
-
-    private interface DeviceMapAction {
-        Map<String, WqttClient> run(Map<String, WqttClient> deviceMap);
     }
 
 }

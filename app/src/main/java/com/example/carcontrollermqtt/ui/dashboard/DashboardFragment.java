@@ -30,6 +30,8 @@ public class DashboardFragment extends Fragment {
     private DashboardViewModel viewModel;
     private Animation scaleLoopAnim;
 
+    private Device currentDevice;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -42,11 +44,6 @@ public class DashboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-
-
-        binding.refreshLayout.setOnRefreshListener(() -> {
-            binding.refreshLayout.setRefreshing(false);
-        });
 
         precacheAnimations();
         subscribeObservers();
@@ -73,6 +70,11 @@ public class DashboardFragment extends Fragment {
                     return false;
             }
         });
+
+        binding.refreshLayout.setOnRefreshListener(() -> {
+            viewModel.refreshDeviceData(currentDevice);
+            binding.refreshLayout.setRefreshing(false);
+        });
     }
 
     private void precacheAnimations() {
@@ -82,6 +84,7 @@ public class DashboardFragment extends Fragment {
     private void subscribeObservers() {
         viewModel.observeSelectedDevice().observe(getViewLifecycleOwner(), device -> {
             Log.d(TAG, "subscribeObservers: current device " + device);
+            currentDevice = device;
             if (device == null) return;
 
             setupDeviceView(device);
@@ -95,11 +98,9 @@ public class DashboardFragment extends Fragment {
 
     private void setupDeviceView(Device device) {
         binding.label.setText(device.getLabel());
-//        binding.avatar.setImageBitmap(device.getAvatarBitmap());
         binding.username.setText(device.getUsername());
 
         Glide.with(this)
-                .asBitmap()
                 .load(device.getAvatarUri().getPath())
                 .into(binding.avatar);
     }

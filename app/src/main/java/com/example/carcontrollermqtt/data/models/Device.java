@@ -9,6 +9,8 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.carcontrollermqtt.service.WqttMessageManager;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -112,6 +114,14 @@ public class Device implements Serializable {
 
     public int getKeepAlive() {
         return keepAlive;
+    }
+
+    public void requestInfo(WqttMessageManager manager) {
+        manager.sendMessage(this, "dev/get", "info");
+    }
+
+    public void requestLocation(WqttMessageManager manager) {
+        manager.sendMessage(this, "dev/get", "location");
     }
 
     @Nullable
