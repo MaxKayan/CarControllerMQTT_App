@@ -12,6 +12,7 @@ import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
+import com.example.carcontrollermqtt.data.models.messages.LocationMessage;
 import com.example.carcontrollermqtt.service.WqttClientManager;
 import com.example.carcontrollermqtt.service.WqttMessageManager;
 
@@ -40,9 +41,20 @@ public class DashboardViewModel extends AndroidViewModel {
         return messageManager.observeDeviceInfo(device);
     }
 
-    public void refreshDeviceData(Device device) {
+    public LiveData<LocationMessage> observeLocation(LifecycleOwner owner, Device device) {
+        if (currentDevice != null) {
+            messageManager.observeDeviceLocation(currentDevice).removeObservers(owner);
+        }
+        currentDevice = device;
+        return messageManager.observeDeviceLocation(device);
+    }
+
+    public void refreshDeviceInfo(Device device) {
         device.requestInfo(messageManager);
-//        device.requestLocation(messageManager);
+    }
+
+    public void refreshDeviceLocation(Device device) {
+        device.requestLocation(messageManager);
     }
 
     public LiveData<Device> observeSelectedDevice() {

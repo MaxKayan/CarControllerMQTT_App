@@ -15,12 +15,18 @@ public class InfoMessage {
     private final boolean carLocked;
     @SerializedName("temp0")
     private final float indoorTemperature;
+    @SerializedName("timer")
+    private final float remainingTime;
+    @SerializedName("signal")
+    private final int signalQuality;
 
-    public InfoMessage(boolean engineRunning, float batteryVoltage, boolean carLocked, float indoorTemperature) {
+    public InfoMessage(boolean engineRunning, float batteryVoltage, boolean carLocked, float indoorTemperature, float remainingTime, int signalQuality) {
         this.engineRunning = engineRunning;
         this.batteryVoltage = batteryVoltage;
         this.carLocked = carLocked;
         this.indoorTemperature = indoorTemperature;
+        this.remainingTime = remainingTime;
+        this.signalQuality = signalQuality;
     }
 
     public boolean isEngineRunning() {
@@ -53,11 +59,21 @@ public class InfoMessage {
         return engineRunning == that.engineRunning &&
                 Float.compare(that.batteryVoltage, batteryVoltage) == 0 &&
                 carLocked == that.carLocked &&
-                Float.compare(that.indoorTemperature, indoorTemperature) == 0;
+                Float.compare(that.indoorTemperature, indoorTemperature) == 0 &&
+                Float.compare(that.remainingTime, remainingTime) == 0 &&
+                signalQuality == that.signalQuality;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(engineRunning, batteryVoltage, carLocked, indoorTemperature);
+        return Objects.hash(engineRunning, batteryVoltage, carLocked, indoorTemperature, remainingTime, signalQuality);
+    }
+
+    public float getRemainingTime() {
+        return remainingTime;
+    }
+
+    public int getSignalQuality() {
+        return signalQuality;
     }
 }

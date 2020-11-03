@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +21,7 @@ import com.example.carcontrollermqtt.MainActivity;
 import com.example.carcontrollermqtt.R;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
+import com.example.carcontrollermqtt.data.models.messages.LocationMessage;
 import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
 
 import java.util.Locale;
@@ -72,7 +74,7 @@ public class DashboardFragment extends Fragment {
         });
 
         binding.refreshLayout.setOnRefreshListener(() -> {
-            viewModel.refreshDeviceData(currentDevice);
+            viewModel.refreshDeviceInfo(currentDevice);
             binding.refreshLayout.setRefreshing(false);
         });
     }
@@ -89,11 +91,23 @@ public class DashboardFragment extends Fragment {
 
             setupDeviceView(device);
 
-            viewModel.observeInfo(this, device).observe(getViewLifecycleOwner(), infoMessage -> {
+            LifecycleOwner owner = getViewLifecycleOwner();
+
+            viewModel.observeInfo(owner, device).observe(owner, infoMessage -> {
                 Log.d(TAG, "subscribeObservers: new info - " + infoMessage.toString());
                 setupInfoView(infoMessage);
             });
+
+            viewModel.observeLocation(owner, device).observe(owner, locationMessage -> {
+                Log.d(TAG, "subscribeObservers: new location message " + locationMessage.toString());
+                setupLocationView(locationMessage);
+            });
         });
+    }
+
+    private void setupLocationView(LocationMessage message) {
+        binding.latitudeValue.setText(String.valueOf(message.getLatitude()));
+        binding.longitudeValue.setText(String.valueOf(message.getLongitude()));
     }
 
     private void setupDeviceView(Device device) {

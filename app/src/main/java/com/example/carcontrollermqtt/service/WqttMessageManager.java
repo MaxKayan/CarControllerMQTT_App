@@ -12,6 +12,7 @@ import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.WqttClient;
 import com.example.carcontrollermqtt.data.models.WqttMessage;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
+import com.example.carcontrollermqtt.data.models.messages.LocationMessage;
 import com.example.carcontrollermqtt.utils.LiveDataMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -26,6 +27,7 @@ import java.util.Date;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -61,6 +63,7 @@ public class WqttMessageManager {
     private final WqttClientManager clientManager;
 
     private final LiveDataMap<String, InfoMessage> deviceInfoMessages = new LiveDataMap<>();
+    private final LiveDataMap<String, LocationMessage> deviceLocationMessages = new LiveDataMap<>();
 
     // Main private constructor to be called from public static function
     private WqttMessageManager(Context context, WqttClientManager clientManager) {
@@ -96,23 +99,30 @@ public class WqttMessageManager {
         switch (topic) {
             case "dev/info":
                 Log.d(TAG, "receiveMessage: info " + message.toString());
-                InfoMessage infoMessage = null;
-                try {
-                    infoMessage = gson.fromJson(message.toString(), InfoMessage.class);
-                } catch (JsonSyntaxException exception) {
-                    Log.e(TAG, "receiveMessage: failed to parse", exception);
-                }
-                Log.d(TAG, "receiveMessage: parsed - " + infoMessage);
-                deviceInfoMessages.set(device.getUsername(), infoMessage);
+                deviceInfoMessages.set(device.getUsername(), serializeMessage(message.toString(), InfoMessage.class));
                 break;
 
             case "dev/location":
                 Log.d(TAG, "receiveMessage: location" + message);
+                deviceLocationMessages.set(device.getUsername(), serializeMessage(message.toString(), LocationMessage.class));
                 break;
 
             default:
                 Log.w(TAG, "receiveMessage: unknown topic! - " + topic);
         }
+    }
+
+
+    @Nullable
+    private <T> T serializeMessage(String payload, Class<T> messageClass) {
+        T result = null;
+        try {
+            result = gson.fromJson(payload, messageClass);
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "receiveMessage: failed to parse", e);
+        }
+
+        return result;
     }
 
 
@@ -195,5 +205,9 @@ public class WqttMessageManager {
 
     public LiveData<InfoMessage> observeDeviceInfo(String deviceUsername) {
         return deviceInfoMessages.observe(deviceUsername);
+    }
+
+    public LiveData<LocationMessage> observeDeviceLocation(Device device) {
+        return deviceLocationMessages.observe(device.getUsername());
     }
 }
