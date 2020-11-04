@@ -45,7 +45,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginBottom="2dp"
                 android:layout_toEndOf="@id/avatar"
-                android:text="Лансер"
+                android:text="@string/empty_placeholder"
                 app:layout_constraintLeft_toRightOf="@id/avatar"
                 app:layout_constraintTop_toTopOf="@id/avatar" />
 
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/label"
                 android:layout_toEndOf="@id/avatar"
-                android:text="u_LEX8ASD2"
+                android:text="@string/empty_placeholder"
                 app:layout_constraintBottom_toBottomOf="@id/avatar"
                 app:layout_constraintLeft_toLeftOf="@id/label" />
 
@@ -73,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
-                android:text="543 ₽"
+                android:text="@string/empty_placeholder"
                 app:layout_constraintBottom_toBottomOf="@id/simIcon"
                 app:layout_constraintLeft_toRightOf="@id/simIcon" />
 
@@ -215,7 +215,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
-                    android:text="12.7 v"
+                    android:text="@string/empty_placeholder"
                     android:textColor="@color/primary_100"
                     app:layout_constraintLeft_toLeftOf="@id/batteryIcon"
                     app:layout_constraintRight_toRightOf="@id/batteryIcon"
@@ -238,7 +238,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
-                    android:text="28 °C"
+                    android:text="@string/empty_placeholder"
                     android:textColor="#FFF3E4"
                     app:layout_constraintLeft_toLeftOf="@id/temperatureIcon"
                     app:layout_constraintRight_toRightOf="@id/temperatureIcon"
@@ -276,14 +276,14 @@
                         <TextView
                             android:id="@+id/longitudeValue"
                             android:layout_gravity="top"
-                            android:text="30.000002103"
+                            android:text="@string/empty_placeholder"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 
                         <TextView
                             android:id="@+id/latitudeValue"
                             android:layout_gravity="bottom"
-                            android:text="32.000002103"
+                            android:text="@string/empty_placeholder"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 

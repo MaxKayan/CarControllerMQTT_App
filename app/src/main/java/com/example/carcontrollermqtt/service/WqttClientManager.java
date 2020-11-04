@@ -87,6 +87,18 @@ public class WqttClientManager {
         return instance;
     }
 
+    public void refreshMainInfo() {
+        if (selectedDevice != null) {
+            selectedDevice.requestInfo(messageManager);
+        }
+    }
+
+    public void refreshMainLocation() {
+        if (selectedDevice != null) {
+            selectedDevice.requestLocation(messageManager);
+        }
+    }
+
     public WqttMessageManager getMessageManager() {
         return messageManager;
     }

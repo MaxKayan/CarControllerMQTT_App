@@ -32,8 +32,6 @@ public class DashboardFragment extends Fragment {
     private DashboardViewModel viewModel;
     private Animation scaleLoopAnim;
 
-    private Device currentDevice;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,8 +72,13 @@ public class DashboardFragment extends Fragment {
         });
 
         binding.refreshLayout.setOnRefreshListener(() -> {
-            viewModel.refreshDeviceInfo(currentDevice);
+            viewModel.refreshDeviceInfo();
             binding.refreshLayout.setRefreshing(false);
+        });
+
+        binding.locationIcon.setOnClickListener(v -> {
+            Log.d(TAG, "setupViewListeners: refresh location");
+            viewModel.refreshDeviceLocation();
         });
     }
 
@@ -86,7 +89,6 @@ public class DashboardFragment extends Fragment {
     private void subscribeObservers() {
         viewModel.observeSelectedDevice().observe(getViewLifecycleOwner(), device -> {
             Log.d(TAG, "subscribeObservers: current device " + device);
-            currentDevice = device;
             if (device == null) return;
 
             setupDeviceView(device);
