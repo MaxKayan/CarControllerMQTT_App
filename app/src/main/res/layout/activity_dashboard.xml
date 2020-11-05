@@ -30,7 +30,7 @@
                 android:id="@+id/avatar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:contentDescription="@string/car_avatar"
                 android:src="@drawable/avatar_placeholder"
@@ -42,7 +42,7 @@
                 style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="2dp"
                 android:layout_toEndOf="@id/avatar"
                 android:text="@string/empty_placeholder"
@@ -72,7 +72,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
+                android:layout_marginStart="6dp"
                 android:text="@string/empty_placeholder"
                 app:layout_constraintBottom_toBottomOf="@id/simIcon"
                 app:layout_constraintLeft_toRightOf="@id/simIcon" />
@@ -94,7 +94,7 @@
                 android:id="@+id/signal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="32dp"
+                android:layout_marginEnd="32dp"
                 android:src="@drawable/ic_signal"
                 app:layout_constraintBottom_toBottomOf="@id/simIcon"
                 app:layout_constraintRight_toRightOf="parent"
@@ -103,7 +103,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
                 android:src="@drawable/ic_antenna"
                 app:layout_constraintBottom_toBottomOf="@id/signal"
                 app:layout_constraintRight_toLeftOf="@id/signal"
@@ -244,51 +244,80 @@
                     app:layout_constraintRight_toRightOf="@id/temperatureIcon"
                     app:layout_constraintTop_toBottomOf="@id/temperatureIcon" />
 
+                <ImageView
+                    android:id="@+id/signalIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="85dp"
+                    android:layout_marginBottom="48dp"
+                    android:src="@drawable/ic_antenna"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/carSilhouette"
+                    app:tint="@color/primary_50" />
+
+                <TextView
+                    android:id="@+id/signalValue"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|bottom"
+                    android:text="@string/empty_placeholder"
+                    android:textColor="@color/primary_50"
+                    app:layout_constraintLeft_toLeftOf="@id/signalIcon"
+                    app:layout_constraintRight_toRightOf="@id/signalIcon"
+                    app:layout_constraintTop_toBottomOf="@id/signalIcon" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
                 android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="24dp"
                 app:cardCornerRadius="16dp"
                 app:layout_constraintTop_toBottomOf="@id/carContainer">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="24dp"
-                    android:background="@drawable/card_gradient_background">
-
-                    <ImageView
-                        android:id="@+id/locationIcon"
-                        app:tint="@color/primary_100"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_baseline_my_location_24" />
+                    android:background="@drawable/card_gradient_background"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
                     <FrameLayout
-                        android:layout_marginLeft="8dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp">
+
+                        <ImageView
+                            android:id="@+id/locationIcon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_baseline_my_location_24"
+                            app:tint="@color/primary_100" />
 
                         <TextView
                             android:id="@+id/longitudeValue"
-                            android:layout_gravity="top"
-                            android:text="@string/empty_placeholder"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top|end"
+                            android:text="@string/empty_placeholder" />
 
                         <TextView
                             android:id="@+id/latitudeValue"
-                            android:layout_gravity="bottom"
-                            android:text="@string/empty_placeholder"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:text="@string/empty_placeholder" />
 
                     </FrameLayout>
 
+                    <org.osmdroid.views.MapView
+                        android:id="@+id/map"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
 

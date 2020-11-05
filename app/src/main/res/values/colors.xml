@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#07ADFE</color>
-    <color name="colorPrimaryDark">#0B5AA4</color>
+    <color name="colorPrimary">@color/primary_500</color>
+    <color name="colorPrimaryVariant">#0B5AA4</color>
     <color name="colorRed">#DB162F</color>
     <color name="colorSecondary">#0AEFCD</color>
-    <color name="colorSecondaryDark">#265873</color>
+    <color name="colorSecondaryVariant">#8AEA92</color>
 
     <!--    8AEA92-->
     <!--    FB42BB-->
     <color name="colorAccent">#8AEA92</color>
 
+    <color name="primary_900">#0b5aa4</color>
+    <color name="primary_800">#0b7ac6</color>
+    <color name="primary_700">#0c8cdb</color>
+    <color name="primary_600">#0A9FEF</color>
+    <color name="primary_500">#07adfe</color>
+    <color name="primary_400">#28baff</color>
+    <color name="primary_300">#4fc6ff</color>
+    <color name="primary_200">#82d6ff</color>
     <color name="primary_100">#B4E6FF</color>
+    <color name="primary_50">#e1f6ff</color>
+
+    <color name="complementary_900">#ef5a0a</color>
+
+    <color name="analogous_500">#00cb96</color>
+    <color name="analogous_200">#0aefcd</color>
+    <color name="analogous_100">#97f5e1</color>
+    <color name="analogous_50">#d6fcf4</color>
 
     <color name="colorBgStart">#46B1EB</color>
     <color name="colorBgCenter">#0574B0</color>
