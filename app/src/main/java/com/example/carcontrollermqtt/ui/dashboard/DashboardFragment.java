@@ -31,7 +31,6 @@ import com.example.carcontrollermqtt.databinding.ActivityDashboardBinding;
 import com.example.carcontrollermqtt.utils.PermissionsManager;
 
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 
 import java.util.Locale;
 
@@ -92,9 +91,9 @@ public class DashboardFragment extends Fragment {
                 }
         );
 
-        binding.map.setTileSource(TileSourceFactory.MAPNIK);
-        binding.map.getZoomController().activate();
-        binding.map.setMultiTouchControls(true);
+//        binding.map.setTileSource(TileSourceFactory.MAPNIK);
+//        binding.map.getZoomController().activate();
+//        binding.map.setMultiTouchControls(true);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -173,9 +172,11 @@ public class DashboardFragment extends Fragment {
         binding.label.setText(device.getLabel());
         binding.username.setText(device.getUsername());
 
-        Glide.with(this)
-                .load(device.getAvatarUri().getPath())
-                .into(binding.avatar);
+        if (device.getAvatarUri() != null) {
+            Glide.with(this)
+                    .load(device.getAvatarUri().getPath())
+                    .into(binding.avatar);
+        }
     }
 
     /**

@@ -86,29 +86,39 @@ public class WqttMessageManager {
         return instance;
     }
 
+    public static String qualifyTopic(Device device, String endpointTopic) {
+        return String.format("data/%s/%s", device.getDeviceId(), endpointTopic);
+    }
+
+    public static String getEndpointTopic(@NonNull String fullTopic) {
+        return fullTopic.substring(fullTopic.indexOf("/", fullTopic.indexOf("/") + 1) + 1);
+    }
+
     /**
      * @param device  Which device received the message
-     * @param topic   Message topic
+     * @param fullTopic   Message fullTopic
      * @param message Message object from client callback
      */
-    public void receiveMessage(Device device, String topic, MqttMessage message) {
+    public void receiveMessage(Device device, String fullTopic, MqttMessage message) {
         writeToDb(
-                messageDao.insert(WqttMessage.newInstance(device.getId(), message.getId(), new Date(), true, topic, message.toString()))
+                messageDao.insert(WqttMessage.newInstance(device.getId(), message.getId(), new Date(), true, fullTopic, message.toString()))
         );
 
-        switch (topic) {
-            case "dev/info":
+        final String endpointTopic = getEndpointTopic(fullTopic);
+
+        switch (endpointTopic) {
+            case "info":
                 Log.d(TAG, "receiveMessage: info " + message.toString());
                 deviceInfoMessages.set(device.getUsername(), serializeMessage(message.toString(), InfoMessage.class));
                 break;
 
-            case "dev/location":
+            case "location":
                 Log.d(TAG, "receiveMessage: location" + message);
                 deviceLocationMessages.set(device.getUsername(), serializeMessage(message.toString(), LocationMessage.class));
                 break;
 
             default:
-                Log.w(TAG, "receiveMessage: unknown topic! - " + topic);
+                Log.w(TAG, "receiveMessage: unknown fullTopic! - " + fullTopic);
         }
     }
 
@@ -129,14 +139,14 @@ public class WqttMessageManager {
     /**
      * Send new message from the current selected {@link Device device}
      *
-     * @param topic   Message topic
+     * @param endpointTopic   Message topic
      * @param payload Payload string
      */
-    public void sendMessage(String topic, String payload) {
+    public void sendMessage(String endpointTopic, String payload) {
         Device selectedDevice = WqttClientManager.getSelectedDevice();
         Log.d(TAG, "sendMessage: selected device " + selectedDevice);
         if (selectedDevice != null) {
-            sendMessage(selectedDevice, topic, payload);
+            sendMessage(selectedDevice, endpointTopic, payload);
         }
     }
 
@@ -144,23 +154,24 @@ public class WqttMessageManager {
      * Send new message from the specified {@link Device device}
      *
      * @param device  Device to send message from
-     * @param topic   Message topic
+     * @param endpointTopic   Message topic
      * @param payload Payload string
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
-    public void sendMessage(Device device, String topic, String payload) {
+    public void sendMessage(Device device, String endpointTopic, String payload) {
         WqttClient client = clientManager.getWqttClient(device.getUsername());
         if (client != null) {
+            final String fullTopic = qualifyTopic(device, endpointTopic);
 
             MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
-            WqttMessage wqttMessage = WqttMessage.newInstance(device.getId(), mqttMessage.getId(), new Date(), false, topic, payload);
+            WqttMessage wqttMessage = WqttMessage.newInstance(device.getId(), mqttMessage.getId(), new Date(), false, fullTopic, payload);
             messageDao.insertAndReadId(wqttMessage)
                     .subscribeOn(Schedulers.io())
                     .subscribe((id) -> {
                         Log.d(TAG, "sendMessage: written and value is - " + id);
                         try {
-                            client.getClient().publish(topic, new MqttMessage(payload.getBytes()), null, new IMqttActionListener() {
+                            client.getClient().publish(fullTopic, new MqttMessage(payload.getBytes()), null, new IMqttActionListener() {
                                 @Override
                                 public void onSuccess(IMqttToken asyncActionToken) {
                                     Log.d(TAG, "onSuccess: updating msg status");

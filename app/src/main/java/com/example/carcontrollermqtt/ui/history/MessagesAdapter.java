@@ -1,5 +1,6 @@
 package com.example.carcontrollermqtt.ui.history;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.carcontrollermqtt.data.models.WqttMessage;
 import com.example.carcontrollermqtt.data.models.transactions.WqttMessageWithDevice;
 import com.example.carcontrollermqtt.databinding.ItemMessageBinding;
+import com.example.carcontrollermqtt.service.WqttMessageManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -99,7 +102,10 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
             binding.cardMessage.setLayoutParams(layoutParams);
 
             binding.deviceName.setText(transaction.device != null ? transaction.device.getUsername() : "Удалёно");
-            binding.topic.setText(transaction.message.getTopic());
+            String topic = transaction.message.getTopic();
+            String[] topicArray = transaction.message.getTopic().split("/");
+            Log.d(TAG, "bind: topicArray: " + Arrays.toString(topicArray));
+            binding.topic.setText(topicArray.length <= 1 ? topic : WqttMessageManager.getEndpointTopic(topic));
             binding.dateTime.setText(transaction.message.getDateTime().toLocaleString());
             binding.payload.setText(transaction.message.getPayload().trim());
         }

@@ -24,7 +24,7 @@ public class Device implements Serializable {
     private final boolean selected;
     private final String label;
     private final String avatarUriString;
-    private final String baseTopic;
+    private final String deviceId;
     private final String username;
     private final String password;
     private final int keepAlive;
@@ -34,14 +34,14 @@ public class Device implements Serializable {
     @Ignore
     private DeviceEvent event;
 
-    public Device(long id, boolean enabled, boolean selected, String label, String avatarUriString, String baseTopic, String username, String password, int keepAlive) {
+    public Device(long id, boolean enabled, boolean selected, String label, String avatarUriString, String deviceId, String username, String password, int keepAlive) {
         if (id > 0L)
             this.id = id;
         this.enabled = enabled;
         this.selected = selected;
         this.label = label;
         this.avatarUriString = avatarUriString;
-        this.baseTopic = baseTopic;
+        this.deviceId = deviceId;
         this.username = username;
         this.password = password;
         this.keepAlive = keepAlive;
@@ -58,7 +58,7 @@ public class Device implements Serializable {
                 id == device.id &&
                 Objects.equals(label, device.label) &&
                 Objects.equals(avatarUriString, device.avatarUriString) &&
-                Objects.equals(baseTopic, device.baseTopic) &&
+                Objects.equals(deviceId, device.deviceId) &&
                 Objects.equals(username, device.username) &&
                 Objects.equals(password, device.password) &&
                 Objects.equals(event, device.event);
@@ -66,7 +66,7 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(enabled, selected, label, avatarUriString, baseTopic, username, password, keepAlive, id, event);
+        return Objects.hash(enabled, selected, label, avatarUriString, deviceId, username, password, keepAlive, id, event);
     }
 
     @NonNull
@@ -95,12 +95,14 @@ public class Device implements Serializable {
         return avatarUriString;
     }
 
+    @Nullable
     public Uri getAvatarUri() {
+        if (avatarUriString == null) return null;
         return Uri.parse(avatarUriString);
     }
 
-    public String getBaseTopic() {
-        return baseTopic;
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public String getUsername() {
@@ -117,11 +119,11 @@ public class Device implements Serializable {
     }
 
     public void requestInfo(WqttMessageManager manager) {
-        manager.sendMessage(this, "dev/get", "info");
+        manager.sendMessage(this, "get", "info");
     }
 
     public void requestLocation(WqttMessageManager manager) {
-        manager.sendMessage(this, "dev/get", "location");
+        manager.sendMessage(this, "get", "location");
     }
 
     @Nullable
@@ -134,11 +136,11 @@ public class Device implements Serializable {
     }
 
     public Device cloneWithEnabled(boolean isEnabled) {
-        return new Device(this.id, isEnabled, this.selected, this.label, avatarUriString, this.baseTopic, this.username, this.password, this.keepAlive);
+        return new Device(this.id, isEnabled, this.selected, this.label, avatarUriString, this.deviceId, this.username, this.password, this.keepAlive);
     }
 
     public Device cloneWithSelected(boolean isSelected) {
-        return new Device(this.id, this.enabled, isSelected, this.label, avatarUriString, this.baseTopic, this.username, this.password, this.keepAlive);
+        return new Device(this.id, this.enabled, isSelected, this.label, avatarUriString, this.deviceId, this.username, this.password, this.keepAlive);
     }
 
 }

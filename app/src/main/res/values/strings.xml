@@ -8,7 +8,8 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <string name="device_name_digits">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-</string>
+    <string name="device_name_characters">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-</string>
+    <string name="device_id_characters">ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:</string>
     <string name="device_disabled">Отключено</string>
     <string name="device_enabled">Включено</string>
     <string name="small_placeholder_text">omg, engine started right now, i just can\'t believe it, it\'s impossible. Never thought that could actually happen anytime any soon. It\'s working?</string>

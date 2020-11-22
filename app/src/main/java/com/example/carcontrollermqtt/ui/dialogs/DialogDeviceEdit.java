@@ -106,12 +106,15 @@ public class DialogDeviceEdit extends DialogFragment {
             editedDevice = (Device) args.getSerializable(DEVICE_SERIALIZED);
             if (editedDevice == null) return;
 
-            Glide.with(this)
-                    .load(editedDevice.getAvatarUri().getPath())
-                    .into(binding.deviceAvatar);
+            if (editedDevice.getAvatarUri() != null) {
+                Glide.with(this)
+                        .load(editedDevice.getAvatarUri().getPath())
+                        .into(binding.deviceAvatar);
+            }
 
             binding.textHeader.setText("Редактировать устройство");
             binding.inputLabel.setText(editedDevice.getLabel());
+            binding.inputMAC.setText(editedDevice.getDeviceId());
             avatarImagePath = editedDevice.getAvatarUriString();
             binding.inputName.setText(editedDevice.getUsername());
             binding.inputPassword.setText(editedDevice.getPassword());
@@ -167,20 +170,22 @@ public class DialogDeviceEdit extends DialogFragment {
     @Nullable
     private DeviceOptions getValidInput() {
         String label = String.valueOf(binding.inputLabel.getText());
+        String deviceId = String.valueOf(binding.inputMAC.getText());
         String username = String.valueOf(binding.inputName.getText());
         String password = String.valueOf(binding.inputPassword.getText());
 
         if (!validateInput(label, username, password)) return null;
 
-        return new DeviceOptions(label, avatarImagePath, username, password);
+        return new DeviceOptions(label, deviceId, avatarImagePath, username, password);
     }
 
     private boolean validateInput(String label, String username, String password) {
         boolean labelNotEmpty = layoutTextNotEmpty(binding.inputLabelLayout, label, "Укажите название для авто");
+        boolean deviceIdNotEmpty = layoutTextNotEmpty(binding.inputMACLayout, label, "Укажите MAC-адрес устройства");
         boolean nameNotEmpty = layoutTextNotEmpty(binding.inputNameLayout, username, "Укажите логин устройства");
         boolean passNotEmpty = layoutTextNotEmpty(binding.inputPasswordLayout, password, "Укажите пароль");
 
-        return labelNotEmpty && nameNotEmpty && passNotEmpty;
+        return labelNotEmpty && deviceIdNotEmpty && nameNotEmpty && passNotEmpty;
     }
 
     private boolean layoutTextNotEmpty(TextInputLayout layout, String value, String errorText) {
@@ -199,9 +204,9 @@ public class DialogDeviceEdit extends DialogFragment {
         int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
         if (editedDevice == null) {
-            result = new Device(0L, true, false, options.label, options.avatar, null, options.username, options.password, keepAliveValue);
+            result = new Device(0L, true, false, options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
         } else {
-            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), options.label, options.avatar, null, options.username, options.password, keepAliveValue);
+            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
         }
 
         return result;
@@ -228,12 +233,14 @@ public class DialogDeviceEdit extends DialogFragment {
 
     private static class DeviceOptions {
         String label;
+        String deviceId;
         String avatar;
         String username;
         String password;
 
-        public DeviceOptions(String label, String avatar, String username, String password) {
+        public DeviceOptions(String label, String deviceId, String avatar, String username, String password) {
             this.label = label;
+            this.deviceId = deviceId;
             this.username = username;
             this.password = password;
             this.avatar = avatar;

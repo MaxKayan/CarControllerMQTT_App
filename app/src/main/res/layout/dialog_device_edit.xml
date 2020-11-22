@@ -74,7 +74,7 @@
             android:id="@+id/inputMAC"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:digits="@string/device_name_digits"
+            android:digits="@string/device_id_characters"
             android:inputType="textFilter" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -91,7 +91,7 @@
             android:id="@+id/inputName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:digits="@string/device_name_digits"
+            android:digits="@string/device_name_characters"
             android:inputType="textFilter" />
 
     </com.google.android.material.textfield.TextInputLayout>

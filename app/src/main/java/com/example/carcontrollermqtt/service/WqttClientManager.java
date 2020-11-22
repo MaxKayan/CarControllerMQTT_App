@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class WqttClientManager {
-    public static final String SERVER_URI = "wss://wqtt.ru:6618/";
+    public static final String SERVER_URI = "wss://dqtt.tk:8083/";
     private static final String TAG = "WqttClientManager";
     private static WqttClientManager instance;
     private static Device selectedDevice;
@@ -164,7 +164,8 @@ public class WqttClientManager {
                     public void onSuccess(IMqttToken asyncActionToken) {
                         Log.i(TAG, "onSuccess: connected " + device.getUsername());
                         try {
-                            client.subscribe("#", 0);
+                            // Subscribe client to correct topic!
+                            client.subscribe(String.format("data/%s/#", device.getDeviceId()), 0);
                             eventChannel.postValue(DeviceEvent.connected(device, null));
                             device.requestInfo(messageManager);
                         } catch (MqttException e) {
