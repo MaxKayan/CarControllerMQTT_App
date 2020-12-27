@@ -118,17 +118,18 @@ public class Device implements Serializable {
         return keepAlive;
     }
 
+    @Nullable
+    public DeviceEvent getEvent() {
+        return event;
+    }
+
+
     public void requestInfo(DqttMessageManager manager) {
         manager.sendMessage(this, "get", "info");
     }
 
     public void requestLocation(DqttMessageManager manager) {
         manager.sendMessage(this, "get", "location");
-    }
-
-    @Nullable
-    public DeviceEvent getEvent() {
-        return event;
     }
 
     public void setEvent(@Nullable DeviceEvent event) {

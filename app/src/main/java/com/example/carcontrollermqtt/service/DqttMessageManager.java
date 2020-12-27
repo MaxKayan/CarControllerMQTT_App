@@ -86,18 +86,31 @@ public class DqttMessageManager {
         return instance;
     }
 
-    public static String qualifyTopic(Device device, String endpointTopic) {
+    /**
+     * Makes a subscribe-ready mqtt topic based on the device.
+     *
+     * @param device        Device to be subscribed.
+     * @param endpointTopic Device's unique id, usually a MAC
+     * @return Fully qualified topic string, ready to be used in mqtt subscription.
+     */
+    public static String getQualifiedTopic(Device device, String endpointTopic) {
         return String.format("data/%s/%s", device.getDeviceId(), endpointTopic);
     }
 
+    /**
+     * Basically the reverse for {@link #getQualifiedTopic this static method}
+     *
+     * @param fullTopic Device's fully qualified mqtt topic string
+     * @return Device's endpoint topic - a unique id, usually a MAC
+     */
     public static String getEndpointTopic(@NonNull String fullTopic) {
         return fullTopic.substring(fullTopic.indexOf("/", fullTopic.indexOf("/") + 1) + 1);
     }
 
     /**
-     * @param device  Which device received the message
-     * @param fullTopic   Message fullTopic
-     * @param message Message object from client callback
+     * @param device    Device that received the message
+     * @param fullTopic Message fullTopic
+     * @param message   Message object from client callback
      */
     public void receiveMessage(Device device, String fullTopic, MqttMessage message) {
         writeToDb(
@@ -139,8 +152,8 @@ public class DqttMessageManager {
     /**
      * Send new message from the current selected {@link Device device}
      *
-     * @param endpointTopic   Message topic
-     * @param payload Payload string
+     * @param endpointTopic Message topic
+     * @param payload       Payload string
      */
     public void sendMessage(String endpointTopic, String payload) {
         Device selectedDevice = DqttClientManager.getSelectedDevice();
@@ -153,16 +166,16 @@ public class DqttMessageManager {
     /**
      * Send new message from the specified {@link Device device}
      *
-     * @param device  Device to send message from
-     * @param endpointTopic   Message topic
-     * @param payload Payload string
+     * @param device        Device to send message from
+     * @param endpointTopic Message topic
+     * @param payload       Payload string
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     public void sendMessage(Device device, String endpointTopic, String payload) {
         DqttClient client = clientManager.getDqttClient(device.getUsername());
         if (client != null) {
-            final String fullTopic = qualifyTopic(device, endpointTopic);
+            final String fullTopic = getQualifiedTopic(device, endpointTopic);
 
             MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
             DqttMessage dqttMessage = DqttMessage.newInstance(device.getId(), mqttMessage.getId(), new Date(), false, fullTopic, payload);
