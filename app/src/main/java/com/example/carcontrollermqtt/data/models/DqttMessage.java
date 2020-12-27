@@ -20,7 +20,7 @@ import java.util.Objects;
                         onDelete = ForeignKey.SET_NULL
                 )
         })
-public class WqttMessage {
+public class DqttMessage {
     private final Long deviceId;
     private final int mqttMessageId;
     private final MessageStatus status;
@@ -31,7 +31,7 @@ public class WqttMessage {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    public WqttMessage(long id, Long deviceId, int mqttMessageId, MessageStatus status, Date dateTime, boolean isIncoming, String topic, String payload) {
+    public DqttMessage(long id, Long deviceId, int mqttMessageId, MessageStatus status, Date dateTime, boolean isIncoming, String topic, String payload) {
         if (id != 0L)
             this.id = id;
         this.deviceId = deviceId;
@@ -43,8 +43,8 @@ public class WqttMessage {
         this.payload = payload;
     }
 
-    public static WqttMessage newInstance(long deviceId, int mqttMessageId, Date dateTime, boolean isIncoming, String topic, String payload) {
-        return new WqttMessage(0L, deviceId, mqttMessageId, isIncoming ? MessageStatus.DELIVERED : MessageStatus.PENDING,
+    public static DqttMessage newInstance(long deviceId, int mqttMessageId, Date dateTime, boolean isIncoming, String topic, String payload) {
+        return new DqttMessage(0L, deviceId, mqttMessageId, isIncoming ? MessageStatus.DELIVERED : MessageStatus.PENDING,
                 dateTime, isIncoming, topic, payload);
     }
 
@@ -52,7 +52,7 @@ public class WqttMessage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WqttMessage that = (WqttMessage) o;
+        DqttMessage that = (DqttMessage) o;
         return deviceId.equals(that.deviceId) &&
                 mqttMessageId == that.mqttMessageId &&
                 isIncoming == that.isIncoming &&
@@ -100,8 +100,8 @@ public class WqttMessage {
         return payload;
     }
 
-    public WqttMessage cloneAndUpdate(long id, MessageStatus newStatus) {
-        return new WqttMessage(id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
+    public DqttMessage cloneAndUpdate(long id, MessageStatus newStatus) {
+        return new DqttMessage(id, this.deviceId, this.mqttMessageId, newStatus, this.dateTime, this.isIncoming, this.topic, this.payload);
     }
 
     public enum MessageStatus {

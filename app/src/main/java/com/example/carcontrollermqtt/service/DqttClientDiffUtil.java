@@ -13,7 +13,7 @@ import com.example.carcontrollermqtt.data.models.Device;
 
 import java.util.List;
 
-public class WqttClientDiffUtil {
+public class DqttClientDiffUtil {
     private static final String TAG = "WqttClientDiffUtil";
 
     private static final DiffUtil.ItemCallback<Device> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<Device>() {
@@ -34,9 +34,9 @@ public class WqttClientDiffUtil {
 
     private final AsyncListDiffer<Device> mDiffer;
 
-    private final WqttClientCallbacks callbacks;
+    private final DqttClientCallbacks callbacks;
 
-    public WqttClientDiffUtil(WqttClientCallbacks callbacks) {
+    public DqttClientDiffUtil(DqttClientCallbacks callbacks) {
         this.callbacks = callbacks;
         mDiffer = new AsyncListDiffer<>(new ListUpdateCallback() {
             @Override
@@ -95,7 +95,7 @@ public class WqttClientDiffUtil {
         }
     }
 
-    public interface WqttClientCallbacks {
+    public interface DqttClientCallbacks {
         void initiateDevice(Device device);
 
         void removeDevice(Device device);

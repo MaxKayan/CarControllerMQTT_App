@@ -6,18 +6,18 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-public class WqttClient {
+public class DqttClient {
     private static final String TAG = "WqttClient";
-    private Device device;
-    private MqttConnectOptions options;
-    private MqttAndroidClient client;
-    private WqttClientAction callbacks;
+    private final Device device;
+    private final MqttConnectOptions options;
+    private final MqttAndroidClient client;
+    private final DqttClientAction callbacks;
 
-    public interface WqttClientAction {
+    public interface DqttClientAction {
         void connect(Device device, MqttAndroidClient client, MqttConnectOptions options);
     }
 
-    public WqttClient(Device device, MqttConnectOptions options, MqttAndroidClient client, WqttClientAction callbacks) {
+    public DqttClient(Device device, MqttConnectOptions options, MqttAndroidClient client, DqttClientAction callbacks) {
         this.device = device;
         this.options = options;
         this.client = client;
@@ -30,12 +30,6 @@ public class WqttClient {
 
     public void connect() {
         callbacks.connect(device, client, options);
-//        Log.i(TAG, "connect: " + device.getUsername());
-//        try {
-//            client.connect(options, null, mqttActionListener);
-//        } catch (MqttException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public void disconnect() {

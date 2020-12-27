@@ -10,24 +10,24 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.carcontrollermqtt.data.models.WqttMessage;
-import com.example.carcontrollermqtt.data.models.transactions.WqttMessageWithDevice;
+import com.example.carcontrollermqtt.data.models.DqttMessage;
+import com.example.carcontrollermqtt.data.models.transactions.DqttMessageWithDevice;
 import com.example.carcontrollermqtt.databinding.ItemMessageBinding;
-import com.example.carcontrollermqtt.service.WqttMessageManager;
+import com.example.carcontrollermqtt.service.DqttMessageManager;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, MessagesAdapter.MessageViewHolder> {
-    public static final DiffUtil.ItemCallback<WqttMessageWithDevice> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<WqttMessageWithDevice>() {
+public class MessagesAdapter extends ListAdapter<DqttMessageWithDevice, MessagesAdapter.MessageViewHolder> {
+    public static final DiffUtil.ItemCallback<DqttMessageWithDevice> DEVICE_ITEM_CALLBACK = new DiffUtil.ItemCallback<DqttMessageWithDevice>() {
         @Override
-        public boolean areItemsTheSame(@NonNull WqttMessageWithDevice oldItem, @NonNull WqttMessageWithDevice newItem) {
+        public boolean areItemsTheSame(@NonNull DqttMessageWithDevice oldItem, @NonNull DqttMessageWithDevice newItem) {
             return oldItem.message.getId() == newItem.message.getId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull WqttMessageWithDevice oldItem, @NonNull WqttMessageWithDevice newItem) {
+        public boolean areContentsTheSame(@NonNull DqttMessageWithDevice oldItem, @NonNull DqttMessageWithDevice newItem) {
             boolean same = oldItem.message.isIncoming() == newItem.message.isIncoming() &&
                     oldItem.message.getTopic().equals(newItem.message.getTopic()) &&
                     Objects.equals(oldItem.message.getDeviceId(), newItem.message.getDeviceId()) &&
@@ -47,12 +47,12 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
         changedCallback = callback;
     }
 
-    public WqttMessageWithDevice getDeviceAt(int position) {
+    public DqttMessageWithDevice getDeviceAt(int position) {
         return getItem(position);
     }
 
     @Override
-    public void onCurrentListChanged(@NonNull List<WqttMessageWithDevice> previousList, @NonNull List<WqttMessageWithDevice> currentList) {
+    public void onCurrentListChanged(@NonNull List<DqttMessageWithDevice> previousList, @NonNull List<DqttMessageWithDevice> currentList) {
         super.onCurrentListChanged(previousList, currentList);
         changedCallback.run();
     }
@@ -66,7 +66,7 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        WqttMessageWithDevice currentItem = getItem(position);
+        DqttMessageWithDevice currentItem = getItem(position);
         holder.bind(currentItem);
     }
 
@@ -83,7 +83,7 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
             this.binding = binding;
         }
 
-        void bind(WqttMessageWithDevice transaction) {
+        void bind(DqttMessageWithDevice transaction) {
             isIncoming = transaction.message.isIncoming();
 
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) binding.cardMessage.getLayoutParams();
@@ -105,12 +105,12 @@ public class MessagesAdapter extends ListAdapter<WqttMessageWithDevice, Messages
             String topic = transaction.message.getTopic();
             String[] topicArray = transaction.message.getTopic().split("/");
             Log.d(TAG, "bind: topicArray: " + Arrays.toString(topicArray));
-            binding.topic.setText(topicArray.length <= 1 ? topic : WqttMessageManager.getEndpointTopic(topic));
+            binding.topic.setText(topicArray.length <= 1 ? topic : DqttMessageManager.getEndpointTopic(topic));
             binding.dateTime.setText(transaction.message.getDateTime().toLocaleString());
             binding.payload.setText(transaction.message.getPayload().trim());
         }
 
-        private void setDeliveryStatus(WqttMessage.MessageStatus status) {
+        private void setDeliveryStatus(DqttMessage.MessageStatus status) {
             switch (status) {
                 case PENDING:
                     binding.iconStatusSent.setVisibility(View.VISIBLE);

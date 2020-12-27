@@ -1,157 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textHeader"
-            style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Добавить устройство" />
-
-    </LinearLayout>
-
-    <include layout="@layout/hr" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center|start"
-        android:orientation="horizontal"
-        android:padding="12dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/deviceAvatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/avatar_placeholder" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTakePicture"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="12dp"
-            android:text="Назначить фото" />
-
-    </LinearLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputLabelLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Название"
-        android:padding="8dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputLabel"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/textHeader"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Добавить устройство" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputMACLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="MAC-адрес устройства"
-        android:padding="8dp">
+        </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputMAC"
+        <include layout="@layout/hr" />
+
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:digits="@string/device_id_characters"
-            android:inputType="textFilter" />
+            android:gravity="center|start"
+            android:orientation="horizontal"
+            android:padding="12dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/deviceAvatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/avatar_placeholder" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputNameLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Логин устройства"
-        android:padding="8dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTakePicture"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="12dp"
+                android:text="Назначить фото" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:digits="@string/device_name_characters"
-            android:inputType="textFilter" />
+        </LinearLayout>
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputPasswordLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Пароль"
-        android:padding="8dp"
-        app:endIconMode="password_toggle">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/inputKeepAliveLayout"
+            android:id="@+id/inputLabelLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="170dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginEnd="-88dp"
-            android:hint="Keep Alive"
-            android:padding="8dp"
-            app:suffixText="сек.">
+            android:hint="Название"
+            android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputKeepAlive"
+                android:id="@+id/inputLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="60" />
+                android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnConfirm"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputMACLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/inputKeepAliveLayout"
-            android:layout_alignBottom="@+id/inputKeepAliveLayout"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginBottom="2dp"
-            android:padding="6dp"
-            android:text="Записать" />
+            android:hint="MAC-адрес устройства"
+            android:padding="8dp">
 
-    </RelativeLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputMAC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="@string/device_id_characters"
+                android:inputType="textFilter" />
 
-</LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputNameLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Логин устройства"
+            android:padding="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="@string/device_name_characters"
+                android:inputType="textFilter" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputPasswordLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Пароль"
+            android:padding="8dp"
+            app:endIconMode="password_toggle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputKeepAliveLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="-88dp"
+                android:hint="Keep Alive"
+                android:padding="8dp"
+                app:suffixText="сек.">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputKeepAlive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="60" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/inputKeepAliveLayout"
+                android:layout_alignBottom="@+id/inputKeepAliveLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="2dp"
+                android:padding="6dp"
+                android:text="Записать" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>

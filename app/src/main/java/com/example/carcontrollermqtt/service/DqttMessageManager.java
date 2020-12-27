@@ -7,10 +7,10 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 
 import com.example.carcontrollermqtt.data.local.AppDatabase;
-import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
+import com.example.carcontrollermqtt.data.local.dao.DqttMessageDao;
 import com.example.carcontrollermqtt.data.models.Device;
-import com.example.carcontrollermqtt.data.models.WqttClient;
-import com.example.carcontrollermqtt.data.models.WqttMessage;
+import com.example.carcontrollermqtt.data.models.DqttClient;
+import com.example.carcontrollermqtt.data.models.DqttMessage;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.data.models.messages.LocationMessage;
 import com.example.carcontrollermqtt.utils.LiveDataMap;
@@ -31,7 +31,7 @@ import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class WqttMessageManager {
+public class DqttMessageManager {
     private static final String TAG = "WqttMessageManager";
 
     // Common rxJava observer callbacks meant to catch exceptions
@@ -52,21 +52,21 @@ public class WqttMessageManager {
     };
 
     // Singleton instance
-    private static WqttMessageManager instance;
+    private static DqttMessageManager instance;
     // App database
     private final AppDatabase database;
-    private final WqttMessageDao messageDao;
+    private final DqttMessageDao messageDao;
 
     private final Gson gson;
 
     // Client manager to get MqttClient based on device name
-    private final WqttClientManager clientManager;
+    private final DqttClientManager clientManager;
 
     private final LiveDataMap<String, InfoMessage> deviceInfoMessages = new LiveDataMap<>();
     private final LiveDataMap<String, LocationMessage> deviceLocationMessages = new LiveDataMap<>();
 
     // Main private constructor to be called from public static function
-    private WqttMessageManager(Context context, WqttClientManager clientManager) {
+    private DqttMessageManager(Context context, DqttClientManager clientManager) {
         this.database = AppDatabase.getInstance(context);
         this.messageDao = database.messageDao();
         this.clientManager = clientManager;
@@ -78,9 +78,9 @@ public class WqttMessageManager {
      * @param clientManager Instantiated singleton. Needed to get client connections from
      * @return Singleton instance
      */
-    public static WqttMessageManager getInstance(Context context, WqttClientManager clientManager) {
+    public static DqttMessageManager getInstance(Context context, DqttClientManager clientManager) {
         if (instance == null) {
-            instance = new WqttMessageManager(context, clientManager);
+            instance = new DqttMessageManager(context, clientManager);
         }
 
         return instance;
@@ -101,7 +101,7 @@ public class WqttMessageManager {
      */
     public void receiveMessage(Device device, String fullTopic, MqttMessage message) {
         writeToDb(
-                messageDao.insert(WqttMessage.newInstance(device.getId(), message.getId(), new Date(), true, fullTopic, message.toString()))
+                messageDao.insert(DqttMessage.newInstance(device.getId(), message.getId(), new Date(), true, fullTopic, message.toString()))
         );
 
         final String endpointTopic = getEndpointTopic(fullTopic);
@@ -143,7 +143,7 @@ public class WqttMessageManager {
      * @param payload Payload string
      */
     public void sendMessage(String endpointTopic, String payload) {
-        Device selectedDevice = WqttClientManager.getSelectedDevice();
+        Device selectedDevice = DqttClientManager.getSelectedDevice();
         Log.d(TAG, "sendMessage: selected device " + selectedDevice);
         if (selectedDevice != null) {
             sendMessage(selectedDevice, endpointTopic, payload);
@@ -160,13 +160,13 @@ public class WqttMessageManager {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
     public void sendMessage(Device device, String endpointTopic, String payload) {
-        WqttClient client = clientManager.getWqttClient(device.getUsername());
+        DqttClient client = clientManager.getDqttClient(device.getUsername());
         if (client != null) {
             final String fullTopic = qualifyTopic(device, endpointTopic);
 
             MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
-            WqttMessage wqttMessage = WqttMessage.newInstance(device.getId(), mqttMessage.getId(), new Date(), false, fullTopic, payload);
-            messageDao.insertAndReadId(wqttMessage)
+            DqttMessage dqttMessage = DqttMessage.newInstance(device.getId(), mqttMessage.getId(), new Date(), false, fullTopic, payload);
+            messageDao.insertAndReadId(dqttMessage)
                     .subscribeOn(Schedulers.io())
                     .subscribe((id) -> {
                         Log.d(TAG, "sendMessage: written and value is - " + id);
@@ -176,7 +176,7 @@ public class WqttMessageManager {
                                 public void onSuccess(IMqttToken asyncActionToken) {
                                     Log.d(TAG, "onSuccess: updating msg status");
                                     writeToDb(
-                                            messageDao.update(wqttMessage.cloneAndUpdate(id, WqttMessage.MessageStatus.DELIVERED))
+                                            messageDao.update(dqttMessage.cloneAndUpdate(id, DqttMessage.MessageStatus.DELIVERED))
                                     );
                                 }
 
@@ -184,14 +184,14 @@ public class WqttMessageManager {
                                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                                     Log.e(TAG, "onFailure: failed to send", exception);
                                     writeToDb(
-                                            messageDao.update(wqttMessage.cloneAndUpdate(id, WqttMessage.MessageStatus.FAILED))
+                                            messageDao.update(dqttMessage.cloneAndUpdate(id, DqttMessage.MessageStatus.FAILED))
                                     );
                                 }
                             });
                         } catch (MqttException e) {
                             Log.e(TAG, "sendMessage: failed to send - " + e.getMessage(), e);
                             writeToDb(
-                                    messageDao.update(wqttMessage.cloneAndUpdate(id, WqttMessage.MessageStatus.FAILED))
+                                    messageDao.update(dqttMessage.cloneAndUpdate(id, DqttMessage.MessageStatus.FAILED))
                             );
                         }
                     }, throwable -> {

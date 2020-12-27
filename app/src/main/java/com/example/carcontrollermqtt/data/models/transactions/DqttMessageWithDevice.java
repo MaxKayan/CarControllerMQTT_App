@@ -5,11 +5,11 @@ import androidx.room.Embedded;
 import androidx.room.Relation;
 
 import com.example.carcontrollermqtt.data.models.Device;
-import com.example.carcontrollermqtt.data.models.WqttMessage;
+import com.example.carcontrollermqtt.data.models.DqttMessage;
 
-public class WqttMessageWithDevice {
+public class DqttMessageWithDevice {
     @Embedded
-    public WqttMessage message;
+    public DqttMessage message;
     @Relation(
             parentColumn = "deviceId",
             entityColumn = "id"

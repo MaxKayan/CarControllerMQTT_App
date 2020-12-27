@@ -11,16 +11,16 @@ import com.example.carcontrollermqtt.data.models.DeviceEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class WqttClientEventBus {
+public final class DqttClientEventBus {
     private static final String TAG = "WqttClientEventBus";
     private final Map<String, MutableLiveData<DeviceEvent>> bus;
     private final Map<String, DeviceEvent> lastDeviceStatus = new HashMap<>();
 
-    private WqttClientEventBus() {
+    private DqttClientEventBus() {
         bus = new HashMap<>();
     }
 
-    public static WqttClientEventBus getInstance() {
+    public static DqttClientEventBus getInstance() {
         return SingletonHolder.DATA_BUS;
     }
 
@@ -45,7 +45,7 @@ public final class WqttClientEventBus {
     }
 
     private static class SingletonHolder {
-        private static final WqttClientEventBus DATA_BUS = new WqttClientEventBus();
+        private static final DqttClientEventBus DATA_BUS = new DqttClientEventBus();
     }
 
 }

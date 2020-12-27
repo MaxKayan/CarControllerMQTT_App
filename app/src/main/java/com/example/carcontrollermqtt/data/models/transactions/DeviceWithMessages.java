@@ -4,7 +4,7 @@ import androidx.room.Embedded;
 import androidx.room.Relation;
 
 import com.example.carcontrollermqtt.data.models.Device;
-import com.example.carcontrollermqtt.data.models.WqttMessage;
+import com.example.carcontrollermqtt.data.models.DqttMessage;
 
 import java.util.List;
 
@@ -15,5 +15,5 @@ public class DeviceWithMessages {
             parentColumn = "id",
             entityColumn = "deviceId"
     )
-    public List<WqttMessage> messages;
+    public List<DqttMessage> messages;
 }

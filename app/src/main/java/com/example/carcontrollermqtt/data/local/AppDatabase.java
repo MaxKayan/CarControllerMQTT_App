@@ -14,12 +14,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.carcontrollermqtt.data.converter.DateConverter;
 import com.example.carcontrollermqtt.data.converter.MessageStatusConverter;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
-import com.example.carcontrollermqtt.data.local.dao.WqttMessageDao;
+import com.example.carcontrollermqtt.data.local.dao.DqttMessageDao;
 import com.example.carcontrollermqtt.data.models.Device;
-import com.example.carcontrollermqtt.data.models.WqttMessage;
+import com.example.carcontrollermqtt.data.models.DqttMessage;
 
-@Database(entities = {Device.class, WqttMessage.class},
-        version = 14,
+@Database(entities = {Device.class, DqttMessage.class},
+        version = 15,
         exportSchema = false)
 @TypeConverters({DateConverter.class, MessageStatusConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -58,6 +58,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract DeviceDao deviceDao();
 
-    public abstract WqttMessageDao messageDao();
+    public abstract DqttMessageDao messageDao();
 
 }

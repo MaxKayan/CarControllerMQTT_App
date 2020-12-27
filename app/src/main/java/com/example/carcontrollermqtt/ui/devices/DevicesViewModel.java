@@ -15,7 +15,7 @@ import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
-import com.example.carcontrollermqtt.service.WqttClientEventBus;
+import com.example.carcontrollermqtt.service.DqttClientEventBus;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +42,7 @@ public class DevicesViewModel extends AndroidViewModel {
         AppDatabase database = AppDatabase.getInstance(application);
         deviceDao = database.deviceDao();
 
-        WqttClientEventBus eventBus = WqttClientEventBus.getInstance();
+        DqttClientEventBus eventBus = DqttClientEventBus.getInstance();
 
         // TODO: is this system over-engineered and i should instead just write device status enum to Room database, cleaning all states upon launch?
         devicesViewMerger.addSource(deviceDao.observeAll(), devices -> {

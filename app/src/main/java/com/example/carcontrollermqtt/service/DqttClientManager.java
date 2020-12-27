@@ -10,7 +10,7 @@ import com.example.carcontrollermqtt.data.local.AppDatabase;
 import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DeviceEvent;
-import com.example.carcontrollermqtt.data.models.WqttClient;
+import com.example.carcontrollermqtt.data.models.DqttClient;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -26,42 +26,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class WqttClientManager {
+public class DqttClientManager {
     public static final String SERVER_URI = "wss://dqtt.tk:8083/";
     private static final String TAG = "WqttClientManager";
-    private static WqttClientManager instance;
+    private static DqttClientManager instance;
     private static Device selectedDevice;
 
     // TODO: A way to avoid passing context to this singleton?
     private final Context context;
     private final DeviceDao deviceDao;
 
-    private final WqttClientDiffUtil deviceListManager;
-    private final WqttClientEventBus eventBus;
-    private final WqttMessageManager messageManager;
+    private final DqttClientDiffUtil deviceListManager;
+    private final DqttClientEventBus eventBus;
+    private final DqttMessageManager messageManager;
 
     // Device username is the key
-    private final Map<String, WqttClient> wqttClientsMap = new HashMap<>();
+    private final Map<String, DqttClient> dqttClientsMap = new HashMap<>();
 
-    private WqttClientManager(Context appContext) {
+    private DqttClientManager(Context appContext) {
         context = appContext.getApplicationContext();
-        eventBus = WqttClientEventBus.getInstance();
+        eventBus = DqttClientEventBus.getInstance();
         deviceDao = AppDatabase.getInstance(appContext).deviceDao();
-        messageManager = WqttMessageManager.getInstance(appContext, this);
-        deviceListManager = new WqttClientDiffUtil(new WqttClientDiffUtil.WqttClientCallbacks() {
+        messageManager = DqttMessageManager.getInstance(appContext, this);
+        deviceListManager = new DqttClientDiffUtil(new DqttClientDiffUtil.DqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
                 if (device.isEnabled())
-                    wqttClientsMap.put(device.getUsername(), createClientForDevice(device));
+                    dqttClientsMap.put(device.getUsername(), createClientForDevice(device));
             }
 
             @Override
             public void removeDevice(Device device) {
                 String key = device.getUsername();
-                WqttClient wqttClient = getWqttClient(device);
-                if (wqttClient != null) {
-                    wqttClient.disconnect();
-                    wqttClientsMap.remove(key);
+                DqttClient dqttClient = getDqttClient(device);
+                if (dqttClient != null) {
+                    dqttClient.disconnect();
+                    dqttClientsMap.remove(key);
                 }
             }
         });
@@ -77,10 +77,10 @@ public class WqttClientManager {
         return selectedDevice;
     }
 
-    public static WqttClientManager getInstance(Context context) {
+    public static DqttClientManager getInstance(Context context) {
         if (instance == null) {
-            synchronized (WqttClientManager.class) {
-                instance = new WqttClientManager(context);
+            synchronized (DqttClientManager.class) {
+                instance = new DqttClientManager(context);
             }
         }
 
@@ -99,24 +99,24 @@ public class WqttClientManager {
         }
     }
 
-    public WqttMessageManager getMessageManager() {
+    public DqttMessageManager getMessageManager() {
         return messageManager;
     }
 
-    public WqttClient getWqttClient(Device device) {
-        return getWqttClient(device.getUsername());
+    public DqttClient getDqttClient(Device device) {
+        return getDqttClient(device.getUsername());
     }
 
     @Nullable
-    public WqttClient getWqttClient(String username) {
-        return wqttClientsMap.get(username);
+    public DqttClient getDqttClient(String username) {
+        return dqttClientsMap.get(username);
     }
 
     public void submitDeviceList(List<Device> devices) {
         deviceListManager.submitList(devices);
     }
 
-    private void handleClientConnection(WqttClient wqtt) {
+    private void handleClientConnection(DqttClient wqtt) {
         boolean deviceEnabled = wqtt.getDevice().isEnabled();
         boolean mqttConnected = wqtt.getClient().isConnected();
 
@@ -127,7 +127,7 @@ public class WqttClientManager {
         }
     }
 
-    private WqttClient createClientForDevice(Device device) {
+    private DqttClient createClientForDevice(Device device) {
         MqttAndroidClient client = new MqttAndroidClient(context, SERVER_URI, "wsc_" + new Random().nextInt(99));
         MqttConnectOptions options = new MqttConnectOptions();
         options.setUserName(device.getUsername());
@@ -155,7 +155,7 @@ public class WqttClientManager {
             }
         });
 
-        WqttClient wqtt = new WqttClient(device, options, client, (connDevice, connClient, connOptions) -> {
+        DqttClient dqtt = new DqttClient(device, options, client, (connDevice, connClient, connOptions) -> {
             eventChannel.setValue(DeviceEvent.pending(device, null));
             Log.i(TAG, "createClientForDevice: Connecting... - " + device.getUsername());
             try {
@@ -183,8 +183,8 @@ public class WqttClientManager {
                 e.printStackTrace();
             }
         });
-        handleClientConnection(wqtt);
-        return wqtt;
+        handleClientConnection(dqtt);
+        return dqtt;
     }
 
 }

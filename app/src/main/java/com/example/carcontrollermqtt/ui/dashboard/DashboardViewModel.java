@@ -13,15 +13,15 @@ import com.example.carcontrollermqtt.data.local.dao.DeviceDao;
 import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.messages.InfoMessage;
 import com.example.carcontrollermqtt.data.models.messages.LocationMessage;
-import com.example.carcontrollermqtt.service.WqttClientManager;
-import com.example.carcontrollermqtt.service.WqttMessageManager;
+import com.example.carcontrollermqtt.service.DqttClientManager;
+import com.example.carcontrollermqtt.service.DqttMessageManager;
 
 @SuppressLint("CheckResult")
 public class DashboardViewModel extends AndroidViewModel {
     private static final String TAG = "DevicesViewModel";
 
-    private final WqttMessageManager messageManager;
-    private final WqttClientManager clientManager;
+    private final DqttMessageManager messageManager;
+    private final DqttClientManager clientManager;
     private final DeviceDao deviceDao;
     private Device currentDevice;
 
@@ -29,7 +29,7 @@ public class DashboardViewModel extends AndroidViewModel {
         super(application);
 
         this.deviceDao = AppDatabase.getInstance(application).deviceDao();
-        this.clientManager = WqttClientManager.getInstance(application);
+        this.clientManager = DqttClientManager.getInstance(application);
         this.messageManager = clientManager.getMessageManager();
     }
 
