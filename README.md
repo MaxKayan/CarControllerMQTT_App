@@ -1,6 +1,6 @@
 # Car Controller MQTT App
 Monitor you car's data in realtime and control the automatic engine startup.
-#### [The web service of this project can be accessed here!](https://dqtt.tk/)
+#### [The web service for this project can be accessed here!](https://dqtt.tk/)
 # Screenshots at current state
 ## Android App
 <img src="https://i.ibb.co/LYd7h9c/Whats-App-Image-2020-11-22-at-23-15-36-2.jpg" width="40%" height="40%">
