@@ -46,7 +46,7 @@ public class DevicesViewModel extends AndroidViewModel {
 
         // TODO: is this system over-engineered and i should instead just write device status enum to Room database, cleaning all states upon launch?
         devicesViewMerger.addSource(deviceDao.observeAll(), devices -> {
-            List<Device> newList = devices.stream().map(device -> {
+            List<Device> newList = devices.stream().peek(device -> {
                 String key = device.getUsername();
                 if (!knownDevices.contains(key)) {
                     knownDevices.add(key);
@@ -58,7 +58,6 @@ public class DevicesViewModel extends AndroidViewModel {
                 device.setEvent(eventBus.getLastEventForDevice(device));
 
                 Log.d(TAG, "DevicesViewModel: set event from saved - " + device.getUsername() + " - " + device.getEvent());
-                return device;
             }).collect(Collectors.toList());
 
             devicesViewMerger.setValue(newList);
@@ -70,9 +69,8 @@ public class DevicesViewModel extends AndroidViewModel {
             Log.d(TAG, "DevicesViewModel: new event arrived - " + deviceEvent);
             List<Device> currentList = devicesViewMerger.getValue();
             if (currentList != null) {
-                List<Device> newList = currentList.stream().map(item -> {
-                    if (item.getId() == device.getId()) item.setEvent(deviceEvent);
-                    return item;
+                List<Device> newList = currentList.stream().peek(item -> {
+                    if (item.getId().equals(device.getId())) item.setEvent(deviceEvent);
                 }).collect(Collectors.toList());
 
                 devicesViewMerger.setValue(newList);
@@ -105,7 +103,7 @@ public class DevicesViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io())
                 .subscribe(devices -> {
                     deviceDao.updateAll(devices.stream()
-                            .map(item -> item.getId() == device.getId() ? item.cloneWithSelected(true) : item.cloneWithSelected(false))
+                            .map(item -> item.getId().equals(device.getId()) ? item.cloneWithSelected(true) : item.cloneWithSelected(false))
                             .collect(Collectors.toList())
                     )
                             .subscribe(() -> {

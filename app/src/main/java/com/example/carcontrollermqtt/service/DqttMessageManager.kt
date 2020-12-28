@@ -149,17 +149,17 @@ class DqttMessageManager private constructor(context: Context, clientManager: Dq
                     it.client.publish(fullTopic, MqttMessage(payload.toByteArray()), null, object : IMqttActionListener {
                         override fun onSuccess(asyncActionToken: IMqttToken) {
                             Log.d(TAG, "onSuccess: updating msg status")
-                            writeToDb { messageDao.update(dqttMessage.cloneAndUpdate(id, DqttMessage.MessageStatus.DELIVERED)) }
+                            writeToDb { messageDao.update(dqttMessage.copy(id = id, status = DqttMessage.MessageStatus.DELIVERED)) }
                         }
 
-                        override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                        override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable?) {
                             Log.e(TAG, "onFailure: failed to send", exception)
-                            writeToDb { messageDao.update(dqttMessage.cloneAndUpdate(id, DqttMessage.MessageStatus.FAILED)) }
+                            writeToDb { messageDao.update(dqttMessage.copy(id = id, status = DqttMessage.MessageStatus.FAILED)) }
                         }
                     })
                 } catch (e: MqttException) {
                     Log.e(TAG, "sendMessage: failed to send - " + e.message, e)
-                    writeToDb { messageDao.update(dqttMessage.cloneAndUpdate(id, DqttMessage.MessageStatus.FAILED)) }
+                    writeToDb { messageDao.update(dqttMessage.copy(id = id, status = DqttMessage.MessageStatus.FAILED)) }
                 }
             }
         }

@@ -112,6 +112,8 @@ public class DialogDeviceEdit extends DialogFragment {
                         .into(binding.deviceAvatar);
             }
 
+            Log.d(TAG, "unpackBundleArgs: editedDevice id " + editedDevice.getId());
+
             binding.textHeader.setText("Редактировать устройство");
             binding.inputLabel.setText(editedDevice.getLabel());
             binding.inputMAC.setText(editedDevice.getDeviceId());
@@ -204,7 +206,7 @@ public class DialogDeviceEdit extends DialogFragment {
         int keepAliveValue = keepAlive.isEmpty() ? 60 : Integer.parseInt(keepAlive);
 
         if (editedDevice == null) {
-            result = new Device(0L, true, false, options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
+            result = new Device(null, true, false, options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
         } else {
             result = new Device(editedDevice.getId(), editedDevice.getEnabled(), editedDevice.getSelected(), options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
         }
@@ -218,9 +220,11 @@ public class DialogDeviceEdit extends DialogFragment {
         deviceDao.getSelectedDevice()
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(selectedDevice -> {
-                    Log.d(TAG, "writeToDB: selected device found" + device.getUsername());
+                    Log.d(TAG, "writeToDB: selected device found " + device.getUsername());
+                    Log.d(TAG, "writeToDB: saving device with id - " + device.getId());
                     deviceDao.insert(device)
-                            .subscribe();
+                            .subscribe(() -> {
+                            }, throwable -> Log.e(TAG, "writeToDB: failed to insert", throwable));
                 })
                 .subscribe((device1, throwable) -> {
                     if (throwable instanceof EmptyResultSetException) {
