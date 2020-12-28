@@ -26,7 +26,7 @@ public class DqttClientDiffUtil {
         public boolean areContentsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
             boolean same = oldItem.getUsername().equals(newItem.getUsername()) &&
                     oldItem.getPassword().equals(newItem.getPassword()) &&
-                    oldItem.isEnabled() == newItem.isEnabled();
+                    oldItem.getEnabled() == newItem.getEnabled();
 
             return same;
         }

@@ -13,7 +13,7 @@ import java.util.*
                     parentColumns = ["id"],
                     childColumns = ["deviceId"], onDelete = ForeignKey.SET_NULL)
         ])
-data class DqttMessage(
+data class DqttMessage2(
         @PrimaryKey(autoGenerate = true)
         val id: Long? = null,
         val deviceId: Long,
@@ -25,7 +25,7 @@ data class DqttMessage(
         val payload: String
 ) {
 
-    fun cloneAndUpdate(id: Long, newStatus: MessageStatus): DqttMessage {
+    fun cloneAndUpdate(id: Long, newStatus: MessageStatus): DqttMessage2 {
         return this.copy(id = id, status = newStatus)
     }
 
@@ -34,8 +34,8 @@ data class DqttMessage(
     }
 
     companion object {
-        fun newInstance(deviceId: Long, mqttMessageId: Int, dateTime: Date, isIncoming: Boolean, topic: String, payload: String): DqttMessage {
-            return DqttMessage(null, deviceId, mqttMessageId, if (isIncoming) MessageStatus.DELIVERED else MessageStatus.PENDING,
+        fun newInstance(deviceId: Long, mqttMessageId: Int, dateTime: Date, isIncoming: Boolean, topic: String, payload: String): DqttMessage2 {
+            return DqttMessage2(0L, deviceId, mqttMessageId, if (isIncoming) MessageStatus.DELIVERED else MessageStatus.PENDING,
                     dateTime, isIncoming, topic, payload)
         }
     }

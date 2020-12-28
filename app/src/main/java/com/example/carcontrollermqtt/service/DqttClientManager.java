@@ -51,7 +51,7 @@ public class DqttClientManager {
         deviceListManager = new DqttClientDiffUtil(new DqttClientDiffUtil.DqttClientCallbacks() {
             @Override
             public void initiateDevice(Device device) {
-                if (device.isEnabled())
+                if (device.getEnabled())
                     dqttClientsMap.put(device.getUsername(), createClientForDevice(device));
             }
 
@@ -117,7 +117,7 @@ public class DqttClientManager {
     }
 
     private void handleClientConnection(DqttClient wqtt) {
-        boolean deviceEnabled = wqtt.getDevice().isEnabled();
+        boolean deviceEnabled = wqtt.getDevice().getEnabled();
         boolean mqttConnected = wqtt.getClient().isConnected();
 
         if (deviceEnabled && !mqttConnected) {

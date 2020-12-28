@@ -53,7 +53,7 @@ public class DevicesFragment extends ToolbarFragment {
 
             @Override
             public void select(Device device) {
-                if (!device.isSelected())
+                if (!device.getSelected())
                     viewModel.selectDevice(device);
             }
 

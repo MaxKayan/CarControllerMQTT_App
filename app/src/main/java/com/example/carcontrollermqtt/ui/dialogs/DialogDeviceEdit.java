@@ -206,7 +206,7 @@ public class DialogDeviceEdit extends DialogFragment {
         if (editedDevice == null) {
             result = new Device(0L, true, false, options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
         } else {
-            result = new Device(editedDevice.getId(), editedDevice.isEnabled(), editedDevice.isSelected(), options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
+            result = new Device(editedDevice.getId(), editedDevice.getEnabled(), editedDevice.getSelected(), options.label, options.avatar, options.deviceId, options.username, options.password, keepAliveValue);
         }
 
         return result;

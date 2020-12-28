@@ -34,8 +34,8 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
         @Override
         public boolean areContentsTheSame(@NonNull Device oldItem, @NonNull Device newItem) {
             boolean same = oldItem.getUsername().equals(newItem.getUsername()) &&
-                    oldItem.isEnabled() == newItem.isEnabled() &&
-                    oldItem.isSelected() == newItem.isSelected() &&
+                    oldItem.getEnabled() == newItem.getEnabled() &&
+                    oldItem.getSelected() == newItem.getSelected() &&
                     Objects.equals(oldItem.getEvent(), newItem.getEvent());
 
             return false;
@@ -101,13 +101,13 @@ public class DevicesAdapter extends ListAdapter<Device, DevicesAdapter.DeviceVie
             deviceId.setText(String.valueOf(device.getId()));
 
             switchEnable.setOnCheckedChangeListener(null);
-            switchEnable.setChecked(device.isEnabled());
+            switchEnable.setChecked(device.getEnabled());
             switchEnable.setOnCheckedChangeListener((compoundButton, b) -> {
                 Log.d(TAG, "bind: switch checked changed on " + device.getUsername() + " to - " + b);
                 callbacks.setEnabled(b, device);
             });
 
-            if (device.isSelected()) {
+            if (device.getSelected()) {
                 isSelected.setVisibility(View.VISIBLE);
             } else {
                 isSelected.setVisibility(View.GONE);
