@@ -11,7 +11,7 @@ import java.util.*
         foreignKeys = [
             ForeignKey(entity = Device::class,
                     parentColumns = ["id"],
-                    childColumns = ["deviceId"], onDelete = ForeignKey.SET_NULL)
+                    childColumns = ["deviceId"], onDelete = ForeignKey.CASCADE)
         ])
 data class DqttMessage(
         @PrimaryKey(autoGenerate = true)

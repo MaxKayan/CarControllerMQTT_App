@@ -19,7 +19,7 @@ import com.example.carcontrollermqtt.data.models.Device;
 import com.example.carcontrollermqtt.data.models.DqttMessage;
 
 @Database(entities = {Device.class, DqttMessage.class},
-        version = 15,
+        version = 16,
         exportSchema = false)
 @TypeConverters({DateConverter.class, MessageStatusConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
